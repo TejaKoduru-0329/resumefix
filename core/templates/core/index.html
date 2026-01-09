@@ -1,0 +1,283 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ResumeFix.ai</title>
+
+<!-- Bootstrap -->
+<link rel="stylesheet" href="{% static 'core/css/bootstrap.min.css' %}">
+
+
+<!-- Font Awesome -->
+{% load static %}
+<link rel="stylesheet" href="{% static 'core/css/all.min.css' %}">
+
+
+<!-- Custom CSS -->
+<link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg fixed-top custom-nav">
+  <div class="container">
+    <div class="d-flex align-items-center">
+      <img src="{% static 'core/images/logo.jpg' %}" class="web-icon me-2">
+      <h3 class="m-0">ResumeFix.ai</h3>
+    </div>
+
+    <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#mainNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="mainNav">
+      <ul class="navbar-nav mx-auto">
+        <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Features</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
+      </ul>
+      <div class="d-flex gap-2">
+        <button class="login-btn">Login</button>
+        <button class="signup-btn">Sign Up</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<main class="mt-5 pt-5">
+
+<!-- HERO -->
+<div class="container box">
+  <div class="row align-items-center">
+    <div class="col-lg-6 text-center text-lg-start">
+      <h3 class="main-text">Fix Your Resume <br> Instantly Using <span class="gradient-text">AI</span></h3>
+      <p class="sub-text">Paste the Job Description & Upload Resume.<br>Let AI Makes it a Perfect Match.</p>
+      <button class="get-started-btn">Get Started</button>
+    </div>
+    <div class="col-lg-6 text-center">
+      <img src="{% static 'core/images/main.png' %}" class="img-fluid">
+    </div>
+  </div>
+</div>
+
+<!-- WHY -->
+<div class="container box">
+  <div class="row align-items-center">
+    <div class="col-lg-6">
+      <p class="left-side-details">Why <br><span class="gradient-text">ResumeFix.ai</span> ?</p>
+      <div class="key-points">
+        <p><span>&#9679</span>Enhance your resume with AI</p>
+        <p><span>&#9679</span>Get more job interviews</p>
+        <p><span>&#9679</span>Generate professional cover letter easily</p>
+      </div>
+    </div>
+    <div class="col-lg-6 text-center">
+      <img src="{% static 'core/images/whythis.png' %}" class="img-fluid">
+    </div>
+  </div>
+</div>
+<div class="container box">
+    <div class="row align-items-center">
+
+        <!-- LEFT IMAGE -->
+        <div class="col-lg-6 col-md-12 explaining-ai text-center mb-4 mb-lg-0">
+            <img src="{% static 'core/images/explaining-ai.png' %}" class="img-fluid" alt="">
+        </div>
+
+        <!-- RIGHT CONTENT -->
+        <div class="col-lg-6 col-md-12 right-section text-center">
+            <h4>Before / After</h4>
+            <h3>Resume Comparison</h3>
+            <p>Build Trust through Transparency</p>
+
+            <img src="{% static 'core/images/comparison.png' %}" class="img-fluid my-3" alt="">
+
+            <div class="row right-section-details text-start">
+                <div class="col-12 col-sm-6">
+                    <p><span>✔️</span> Added Keywords</p>
+                </div>
+                <div class="col-12 col-sm-6">
+                    <p><span>✔️</span> Formatted Layout</p>
+                </div>
+                <div class="col-12 col-sm-6">
+                    <p><span>✔️</span> Improved Action Verbs</p>
+                </div>
+                <div class="col-12 col-sm-6">
+                    <p><span>✔️</span> Skill Enhancements</p>
+                </div>
+                <div class="col-12 col-sm-6">
+                    <p><span>✔️</span> Optimized Structure</p>
+                </div>
+                <div class="col-12 col-sm-6">
+                    <p><span>✔️</span> Grammar & Spelling Fixes</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<!-- ADVANTAGES -->
+<div class="container box">
+    <div class="section-heading text-center mb-4">
+        <h3>Advantages of ResumeFix.ai</h3>
+    </div>
+
+    <div class="row advantages-section g-4">
+
+        <!-- CARD 1 -->
+        <div class="col-lg-6 col-md-12">
+            <div class="adv-section-1">
+                <img src="{% static 'core/images/adv-icon1.jpg' %}" alt="">
+                <div class="adv-1">
+                    <h4>Increases Job Interview Chances</h4>
+                    <p>Tailors resume to slight with recruiters and ATS (Applicant Tracking System)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD 2 -->
+        <div class="col-lg-6 col-md-12">
+            <div class="adv-section-2">
+                <img src="{% static 'core/images/adv-icon2.jpg' %}" alt="">
+                <div class="adv-2">
+                    <h4>Helps Freshers and Experienced Candidates</h4>
+                    <p>Equally valuable for Freshers who are not content with mediocrity</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD 3 -->
+        <div class="col-lg-6 col-md-12">
+            <div class="adv-section-3">
+                <img src="{% static 'core/images/adv-icon3.png' %}" alt="">
+                <div class="adv-3">
+                    <h4>Focused on ATS Compatability</h4>
+                    <p>We optimize your resume to effectively pass Applicant Tracking System (ATS), helping you to reach hiring managers</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD 4 -->
+        <div class="col-lg-6 col-md-12">
+            <div class="adv-section-4">
+                <img src="{% static 'core/images/adv-icon4.jpg' %}" alt="">
+                <div class="adv-4">
+                    <h4>Save Time and Effort</h4>
+                    <p>No need to keyword-match and reformat professions manually</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Features -->
+
+<div class="container box">
+    <div class="section-heading text-center mb-4">
+        <h3>Features of ResumeFix.ai</h3>
+    </div>
+
+    <div class="row features-section g-4">
+
+        <!-- CARD 1 -->
+        <div class="col-lg-6 col-md-12">
+            <div class="feature-section-1">
+                <img src="{% static 'core/images/feature-icon-1.png' %}" alt="">
+                <div class="feature-1">
+                    <h4>AI Resume Tailoring</h4>
+                    <p>AI adjusts resume content to fit keywords, skills, responsibilities and more</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD 2 -->
+        <div class="col-lg-6 col-md-12">
+            <div class="feature-section-2">
+                <img src="{% static 'core/images/feature-icon-2.jpg' %}" alt="">
+                <div class="feature-2">
+                    <h4>Cover Letter Generator</h4>
+                    <p>Generate a customized cover letter using AI by simply pasting the job description and your resume—quick, smart, and low-cost</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD 3 -->
+        <div class="col-lg-6 col-md-12">
+            <div class="feature-section-3">
+                <img src="{% static 'core/images/feature-icon-3.jpg' %}" alt="">
+                <div class="feature-3">
+                   <h4>Resume Analyzer</h4>
+                  <p>Evaluate how well your resume matches any job decription.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD 4 -->
+        <div class="col-lg-6 col-md-12">
+            <div class="feature-section-4">
+                <img src="{% static 'core/images/feature-icon-4.jpg' %}" alt="">
+                <div class="feature-4">
+                  <h4>AI-Powered Job Match Optimizer</h4>
+                  <p>Align your resume perfectly with any job description.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- CTA -->
+<div class="container box">
+  <div class="row align-items-center">
+    <div class="col-lg-6">
+      <p class="main-text">Improve <br>Your Resume With <span class="gradient-text">AI</span></p>
+      <button class="get-started-btn">Try ResumeFix.ai</button>
+    </div>
+    <div class="col-lg-6 text-center">
+      <img src="{% static 'core/images/last-robo.png' %}" class="img-fluid">
+    </div>
+  </div>
+</div>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container box">
+    <div class="row">
+      <div class="col-md-3">
+        <h4>About Us</h4>
+        <a href="#">Blogs</a>
+      </div>
+      <div class="col-md-3">
+        <h4>Policies</h4>
+        <a href="#">Privacy</a>
+      </div>
+      <div class="col-md-3">
+        <h4>Contact</h4>
+        <div class="social-links">
+          <a href="#"><i class="fab fa-facebook"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <h4>FAQs</h4>
+      </div>
+    </div>
+    <p class="text-center mt-4">© 2025 ResumeFix.ai. All rights reserved.</p>
+  </div>
+</footer>
+
+<script src="{% static 'core/js/bootstrap.bundle.min.js' %}"></script>
+
+</body>
+</html>

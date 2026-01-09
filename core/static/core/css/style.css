@@ -1,0 +1,254 @@
+body {
+    background: #eaecee;
+    font-family: 'Poppins', sans-serif;
+    overflow-x: hidden;
+}
+
+.custom-nav {
+    background: #eaecee;
+    box-shadow: 5px 5px 15px #c1c8d3, -5px -5px 15px #fff;
+}
+
+.web-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+.nav-link {
+    color: #1244a1;
+}
+
+.nav-link:hover {
+    color: #fff;
+    background: linear-gradient(-45deg, #035afa, #194782da);
+    border-radius: 4px;
+}
+
+.login-btn, .signup-btn {
+    border: none;
+    padding: 8px 20px;
+    background: #eaecee;
+    box-shadow: 5px 5px 15px #c1c8d3, -5px -5px 15px #fff;
+    border-radius: 3px;
+}
+
+.login-btn:hover, .signup-btn:hover {
+    color: #fff;
+    background: linear-gradient(-45deg, #D000F7, #24BAE3);
+}
+
+.box {
+    margin: 30px auto;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 5px 5px 15px #c1c8d3, -5px -5px 15px #fff;
+}
+
+.get-started-btn {
+    box-shadow: 5px 5px 15px #c1c8d3, -5px -5px 15px #fff;
+    border: none;
+    padding: 10px 25px;
+    font-size: 1.2rem;
+    color: #ffffff;
+    background: linear-gradient(-45deg, #D000F7, #24BAE3);
+    border-radius: 5px;
+}
+
+.get-started-btn:hover {
+    background-image: linear-gradient(-45deg, #af9cb3, #083f4e
+            );
+    }
+
+.left-side-details{
+    font-size: 3rem;
+    font-weight: 700;
+}
+
+.key-points span {
+    margin-right: 5px;
+}
+.key-points p {
+    display: flex;
+    font-size: 1.5rem;
+    font-weight: 500;
+    text-align: start;
+}
+
+.right-section h4{
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+.right-section h3{
+    font-size: 3rem;
+    font-weight: bold;
+}
+
+.right-section p{
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.right-section-details p {
+    display: flex;
+    width: 100%;
+    text-align: start;
+    align-items: center;
+    margin-left: 30px;
+    font-size: 1.2rem;
+    font-weight: 500;
+    line-height: 1.2;
+    margin: 6px;
+}
+
+.right-section-details span {
+    margin-right: 5px;
+    font-size: 1.5rem;
+}
+
+/* Advantages */
+
+/* Heading */
+.section-heading h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+/* Individual Advantage Cards */
+.adv-section-1,
+.adv-section-2,
+.adv-section-3,
+.adv-section-4,
+.feature-section-1,
+.feature-section-2,
+.feature-section-3,
+.feature-section-4{
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 5px 5px 15px #c1c8d3, -5px -5px 15px #fff;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+/* Hover Effect */
+.adv-section-1:hover,
+.adv-section-2:hover,
+.adv-section-3:hover,
+.adv-section-4:hover,
+.feature-section-1:hover,
+.feature-section-2:hover,
+.feature-section-3:hover,
+.feature-section-4:hover{
+    color: #fff;
+    background-image: linear-gradient(-45deg, #035afa, #194782da);
+}
+
+/* Images */
+.adv-section-1 img,
+.adv-section-2 img,
+.adv-section-3 img,
+.adv-section-4 img,
+.feature-section-1 img,
+.feature-section-2 img,
+.feature-section-3 img,
+.feature-section-4 img{
+    height: 180px;
+    width: auto;
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+
+/* Text Content */
+.adv-1 h4,
+.adv-2 h4,
+.adv-3 h4,
+.adv-4 h4,
+.feature-1 h4,
+.feature-2 h4,
+.feature-3 h4,
+.feature-4 h4 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.adv-1 p,
+.adv-2 p,
+.adv-3 p,
+.adv-4 p,
+.feature-1 p,
+.feature-2 p,
+.feature-3 p,
+.feature-4 p{
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Responsiveness  */
+
+@media (max-width: 768px) {
+    .adv-section-1,
+    .adv-section-2,
+    .adv-section-3,
+    .adv-section-4,
+    .feature-section-1,
+    .feature-section-2,
+    .feature-section-3,
+    .feature-section-4 {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .adv-section-1 img,
+    .adv-section-2 img,
+    .adv-section-3 img,
+    .adv-section-4 img,
+    .feature-section-1 img,
+    .feature-section-2 img,
+    .feature-section-3 img,
+    .feature-section-4 img {
+        height: 120px;
+        margin-bottom: 10px;
+    }
+}
+
+
+.main-text {
+    font-size: 3rem;
+    font-weight: 700;
+}
+
+.gradient-text {
+    background: linear-gradient(-45deg, #D000F7, #24BAE3);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.sub-text {
+    font-size: 1.2rem;
+}
+
+.card-box {
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 5px 5px 15px #c1c8d3, -5px -5px 15px #fff;
+}
+
+.social-links a {
+    margin-right: 10px;
+    font-size: 1.5rem;
+    color: black;
+}
+
+@media (max-width: 768px) {
+  .main-text {
+    font-size: 2rem;
+  }
+}
