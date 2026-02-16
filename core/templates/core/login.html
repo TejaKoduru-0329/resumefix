@@ -1,0 +1,82 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+
+    <!-- BootStrap -->
+    <link rel="stylesheet" href="{% static 'core/css/bootstrap.min.css' %}">
+
+    <!-- Font-Awesome -->
+    <link rel="stylesheet" href="{% static 'core/css/all.min.css' %}">
+
+    <!-- Style -->
+    <link rel="stylesheet" href="{% static 'core/css/login.css' %}">
+</head>
+<body>
+    <!-- NAVBAR -->
+    <!-- <nav class="navbar navbar-expand-lg fixed-top custom-nav">
+        <div class="container">
+            <div class="d-flex align-items-center">
+                <img src="{% static 'core/images/logo.jpg' %}" class="web-icon me-2">
+                <h3 class="m-0">ResumeFix.ai</h3>
+            </div>
+        </div>
+    </nav> -->
+    <div class="container">
+        <div class="row justify-content-center align-items-center min-vh-100">
+
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card">
+                    <h3 class="gradient-text text-center mb-4 fw-bold">Login</h3>
+
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert {% if 'error' in message.tags %}alert-danger{% elif 'success' in message.tags %}alert-success{% else %}alert-info{% endif %} alert-dismissible fade show custom-alert"
+                                role="alert">
+
+                                <span>{{ message }}</span>
+
+                                <button type="button" class="custom-close" data-bs-dismiss="alert" aria-label="Close">
+                                <i class="fa-solid fa-xmark"></i>
+                                </button>
+
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+
+                    <form method="POST" action="{% url 'login'%}">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label class="form-label">Username<span>*</span></label>
+                            <input type="text" name="username" class="form-control" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Password<span>*</span></label>
+                            <input type="password" name="password1" class="form-control" required>
+                        </div>
+                        <div class="text-center">
+                            <button class="login-btn text-center">Login</button>
+                        </div>
+                        
+                    </form>
+
+                    <p class="text-start mt-3">Don’t have an account?
+                        <a href="{% url 'signup' %}" target="_blank">Sign up</a>
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <script src="{% static 'core/js/bootstrap.bundle.min.js' %}"></script>
+
+</body>
+</html>

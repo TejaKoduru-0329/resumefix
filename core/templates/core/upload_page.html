@@ -1,0 +1,235 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Page</title>
+
+    <!-- BootStrap -->
+    <link rel="stylesheet" href="{% static 'core/css/bootstrap.min.css' %}">
+
+    <!-- Font-Awesome -->
+    <link rel="stylesheet" href="{% static 'core/css/all.min.css' %}">
+
+    <!-- Style -->
+    <link rel="stylesheet" href="{% static 'core/css/upload_page.css' %}">
+
+</head>
+<body>
+    
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg fixed-top custom-nav">
+        <div class="container">
+            <div class="d-flex align-items-center">
+                <img src="{% static 'core/images/logo.jpg' %}" class="web-icon me-2">
+                <h3 class="m-0">ResumeFix.ai</h3>
+            </div>
+
+            <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <div class="collapse navbar-collapse custom-menu" id="mainNav">
+                <ul class="navbar-nav mx-auto text-end">
+                    <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+                </ul>
+                <div class="d-flex justify-content-end mt-2 gap-2 text-end">
+                    <a href="{% url 'logout' %}" class="logout-btn">Log Out</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container mt-5 pt-5">
+        <div class="card-box">
+            <div class="row justify-content-center align-items-center">
+                <div class="upload-section col-lg-6">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <!-- Resume Upload -->
+                        <div class="upload-box text-center"
+                            onclick="document.getElementById('resumeInput').click()">
+
+                            <!-- Icon / Spinner -->
+                            <div id="uploadIconWrap">
+                                <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+                            </div>
+
+                            <!-- Main text -->
+                            <p class="mb-0 fw-semibold" id="uploadStatus">Upload Resume</p>
+                            <small class="text-muted" id="uploadSub">PDF or DOCX</small>
+
+                            <!-- File name row -->
+                            <div class="file-row mt-2" id="fileRow" style="display:none;">
+                                <span id="fileName"></span>
+                                <i class="fa-solid fa-xmark remove-file"
+                            onclick="event.stopPropagation(); removeFile()"></i>
+                            </div>
+                        </div>
+
+                        <input type="file" id="resumeInput" hidden accept=".pdf,.docx" name="resume">
+
+                        <p id="fileError" style="display:none;color:red;font-size:13px;">
+                        Only PDF or DOCX files are allowed
+                        </p>
+
+                        <br>
+
+                        <!-- Job Description -->
+                        <div class="jd-box mb-3">
+                            <textarea class="form-control" rows="10" name="job_description" placeholder="Paste the Job Description..."></textarea>
+                        </div>
+
+                        <!-- Fix Button -->
+                        <div class="text-center">
+                            <button type="submit" class="fix-my-resume-btn text-center">⚡Fix My Resume</button>
+                        </div>
+
+                        <div id="formError" class="form-error mt-3" style="display:none;">
+                            <span id="formErrorText"></span>
+                            <i class="fa-solid fa-circle-xmark"></i>
+                        </div>
+                    </form>
+            
+
+                    <div id="loading" class="text-center mt-3" style="display:none;">
+                        <div class="spinner-border text-primary"></div>
+                        <p class="mt-2 fw-semibold">AI is fixing your resume...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   
+    <!-- Before & After Preview -->
+    {% if show_preview %}
+    <div class="container mt-5">
+        <div class="card-box">
+
+            <div class="row g-4 previews">
+
+                <!-- BEFORE AI FIX -->
+                <div class="col-12 col-xl-6">
+                    <div class="preview-card">
+
+                        <h5 class="paper-title text-center">Before AI Fix</h5>
+
+                        <div class="preview-inner pdf-scroll">
+                            <div class="pdf-wrapper">
+                                <iframe
+                                    src="{{ preview_pdf_url }}#toolbar=0&navpanes=0&scrollbar=0"
+                                    class="pdf-frame" scrolling="no">
+                                </iframe>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- AFTER AI FIX -->
+                <div class="col-12 col-xl-6">
+                    <div class="preview-card">
+
+                        <h5 class="paper-title text-center">After AI Fix</h5>
+
+                        <div class="preview-inner">
+                            <div class="resume-paper">
+                                <div class="ats-resume">
+
+                                    <div class="resume-header">
+                                        <h1 class="resume-name">{{ name }}</h1>
+                                        <p class="resume-contact">
+                                            {{ phone }} | {{ email }} | {{ dob }} | {{ location }}
+                                        </p>
+                                    </div>
+
+                                    <div class="resume-section">
+                                        <h2 class="section-title">Professional Summary</h2>
+                                        <p>{{ objective }}</p>
+                                    </div>
+
+                                    <div class="resume-section">
+                                        <h2 class="section-title">Technical Skills</h2>
+                                        <p>{{ technical_skills }}</p>
+                                    </div>
+
+                                    {% if work_experience %}
+                                    <div class="resume-section">
+                                        <h2 class="section-title">Work Experience</h2>
+                                        <ul>
+                                            {% for exp in work_experience %}
+                                            <li>{{ exp }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                    {% endif %}
+
+                                    <div class="resume-section">
+                                        <h2 class="section-title">Projects</h2>
+                                        {{ projects|safe }}
+                                    </div>
+
+                                    <div class="resume-section">
+                                        <h2 class="section-title">Education</h2>
+                                        {{ education|safe }}
+                                    </div>
+
+                                    {% if languages %}
+                                    <div class="resume-section">
+                                        <h2 class="section-title">Languages</h2>
+                                        <p>{{ languages }}</p>
+                                    </div>
+                                    {% endif %}
+
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="text-center mt-5">
+                <a href="{% url 'download_resume' analysis.id %}" class="download-btn" target="_blank">
+                    ⬇ Download AI Fixed Resume
+                </a>
+            </div>
+
+            <div class="text-center mt-3">
+                <button class="cv-btn">
+                    ✉ Generate Cover Letter
+                </button>
+            </div>
+
+        </div>
+
+        
+    </div>
+    {% endif %}
+    
+
+
+    
+    
+    
+        
+    
+
+    
+
+    <!-- Script -->
+    <script src="{% static 'core/js/upload_page.js' %}"></script>
+    <script src="{% static 'core/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,87 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SignUp</title>
+
+    <!-- BootStrap -->
+    <link rel="stylesheet" href="{% static 'core/css/bootstrap.min.css' %}">
+
+    <!-- Font-Awesome -->
+    <link rel="stylesheet" href="{% static 'core/css/all.min.css' %}">
+
+    <!-- Style -->
+    <link rel="stylesheet" href="{% static 'core/css/signup.css' %}">
+</head>
+<body>
+
+    <div class="container">
+        <div class="row justify-content-center align-items-center min-vh-100">
+
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card">
+                    <h3 class="gradient-text text-center mb-4 fw-bold">Sign Up</h3>
+
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert {% if 'error' in message.tags %}alert-danger{% elif 'success' in message.tags %}alert-success{% else %}alert-info{% endif %} alert-dismissible fade show custom-alert"
+                                role="alert">
+
+                                <span>{{ message }}</span>
+
+                                <button type="button" class="custom-close" data-bs-dismiss="alert" aria-label="Close">
+                                <i class="fa-solid fa-xmark"></i>
+                                </button>
+
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="POST" action="{% url 'signup' %}">
+                       {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label class="form-label">First Name<span class="aestrix">*</span></label>
+                            <input type="text" name="firstname" required class="form-control">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Last Name<span class="aestrix">*</span></label>
+                            <input type="text" name="lastname" required class="form-control">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Username<span class="aestrix">*</span></label>
+                            <input type="text" name="username" required class="form-control">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Email<span class="aestrix">*</span></label>
+                            <input type="email" name="email" required class="form-control">
+
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Password<span class="aestrix">*</span></label>
+                            <input type="password" name="password1" required class="form-control">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Re-Type Password<span class="aestrix">*</span></label>
+                            <input type="password" name="password2" required class="form-control">
+                        </div>
+
+                        <div class="text-center">
+                            <button class="signup-btn text-center">Create Profile</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{% static 'core/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>
