@@ -461,91 +461,128 @@ def generate_ats_resume_text(sections, jd_keywords):
 def generate_ats_pdf(sections, jd_keywords, output_path):
     """Generate ATS-friendly PDF resume"""
     buffer = BytesIO()
-    doc = SimpleDocTemplate(buffer, pagesize=letter)
+    # Compact margins for ATS
+    doc = SimpleDocTemplate(buffer, pagesize=letter, leftMargin=0.5*inch, rightMargin=0.5*inch, topMargin=0.5*inch, bottomMargin=0.5*inch)
     styles = getSampleStyleSheet()
-    
+
     # Custom styles
     title_style = ParagraphStyle(
         'Title',
         parent=styles['Heading1'],
         fontSize=16,
-        spaceAfter=10,
-        alignment=TA_CENTER
+        spaceAfter=8,
+        alignment=TA_CENTER,
+        fontName='Helvetica-Bold'
     )
-    
     section_style = ParagraphStyle(
         'Section',
         parent=styles['Heading2'],
         fontSize=12,
-        spaceAfter=5,
-        fontName='Helvetica-Bold'
+        spaceAfter=4,
+        fontName='Helvetica-Bold',
+        alignment=TA_LEFT
     )
-    
-    normal_style = styles['Normal']
-    normal_style.fontSize = 10
-    normal_style.leading = 12
-    
+    normal_style = ParagraphStyle(
+        'Normal',
+        parent=styles['Normal'],
+        fontSize=10,
+        leading=13,
+        spaceAfter=2,
+        fontName='Helvetica'
+    )
+    muted_style = ParagraphStyle(
+        'Muted',
+        parent=styles['Normal'],
+        fontSize=10,
+        textColor='#555555',
+        leading=13,
+        spaceAfter=2,
+        fontName='Helvetica'
+    )
+
     story = []
-    
-    # Header
-    story.append(Paragraph(sections['name'], title_style))
+
+    # HEADER
+    story.append(Paragraph(f"<b>{sections['name']}</b>", title_style))
     contact = f"{sections['phone']} | {sections['email']}"
     if sections['location']:
         contact += f" | {sections['location']}"
-    story.append(Paragraph(contact, ParagraphStyle('Contact', parent=normal_style, alignment=TA_CENTER)))
-    story.append(Spacer(1, 0.2*inch))
-    
-    # Professional Summary
+    story.append(Paragraph(contact, muted_style))
+    story.append(Spacer(1, 0.12*inch))
+
+    # PROFESSIONAL SUMMARY (3-4 lines, tailored)
     story.append(Paragraph("PROFESSIONAL SUMMARY", section_style))
-    summary = optimize_professional_summary(sections['objective'], jd_keywords)
-    story.append(Paragraph(summary, normal_style))
-    story.append(Spacer(1, 0.1*inch))
-    
-    # Technical Skills
+    summary_lines = optimize_professional_summary(sections['objective'], jd_keywords).split('.')
+    summary_lines = [l.strip() for l in summary_lines if l.strip()][:4]
+    for line in summary_lines:
+        story.append(Paragraph(line + ('.' if not line.endswith('.') else ''), normal_style))
+    story.append(Spacer(1, 0.08*inch))
+
+    # TECHNICAL SKILLS (categorized)
     if sections['technical_skills']:
         story.append(Paragraph("TECHNICAL SKILLS", section_style))
-        optimized_skills = optimize_technical_skills(sections['technical_skills'], jd_keywords)
-        story.append(Paragraph(", ".join(optimized_skills), normal_style))
-        story.append(Spacer(1, 0.1*inch))
-    
-    # Work Experience
-    if sections['work_experience']:
-        story.append(Paragraph("WORK EXPERIENCE", section_style))
-        optimized_exp = optimize_work_experience(sections['work_experience'], jd_keywords)
-        for line in optimized_exp:
-            story.append(Paragraph(f"• {line}", normal_style))
-        story.append(Spacer(1, 0.1*inch))
-    
-    # Projects
+        # Categorize skills
+        categories = {"Programming": [], "Frameworks": [], "Databases": [], "Tools": [], "Other": []}
+        for skill in sections['technical_skills']:
+            s = skill.lower()
+            if s in ["python", "java", "c", "c++", "javascript"]:
+                categories["Programming"].append(skill)
+            elif s in ["django", "flask", "react", "angular", "vue", "bootstrap"]:
+                categories["Frameworks"].append(skill)
+            elif s in ["sqlite", "mysql", "postgresql", "mongodb", "sql"]:
+                categories["Databases"].append(skill)
+            elif s in ["git"]:
+                categories["Tools"].append(skill)
+            else:
+                categories["Other"].append(skill)
+        for cat, vals in categories.items():
+            if vals:
+                story.append(Paragraph(f"<b>{cat}:</b> {', '.join(vals)}", normal_style))
+        story.append(Spacer(1, 0.08*inch))
+
+    # SOFT SKILLS (if present)
+    if sections['soft_skills']:
+        story.append(Paragraph("SOFT SKILLS", section_style))
+        story.append(Paragraph(", ".join(sections['soft_skills']), normal_style))
+        story.append(Spacer(1, 0.08*inch))
+
+    # PROJECTS
     if sections.get('projects'):
         story.append(Paragraph("PROJECTS", section_style))
         optimized_projects = optimize_projects(sections['projects'], jd_keywords)
         for project in optimized_projects:
+            # Sub-heading (e.g., Web Development Project)
+            subheading = "Academic Project" if "fabrication" in project['title'].lower() or "characterization" in project['title'].lower() else "Web Development Project"
+            story.append(Paragraph(f"<b>{subheading}</b>", muted_style))
             story.append(Paragraph(f"<b>{project['title']}</b>", normal_style))
             for bullet in project['bullets']:
-                story.append(Paragraph(f"  - {bullet}", normal_style))
-        story.append(Spacer(1, 0.1*inch))
-    
-    # Education
+                story.append(Paragraph(f"<font face='Symbol'>•</font>\t{bullet}", normal_style))
+        story.append(Spacer(1, 0.08*inch))
+
+    # EDUCATION
     if sections.get('education_entries'):
         story.append(Paragraph("EDUCATION", section_style))
         for edu in sections['education_entries']:
-            story.append(Paragraph(f"<b>{edu['institution']}</b>", normal_style))
-            if edu['qualification']:
-                story.append(Paragraph(edu['qualification'], normal_style))
-        story.append(Spacer(1, 0.1*inch))
-    
-    # Languages
+            # Bold institution, muted location/year
+            inst = f"<b>{edu['institution']}</b>"
+            qual = edu['qualification']
+            story.append(Paragraph(inst, normal_style))
+            if qual:
+                story.append(Paragraph(qual, muted_style))
+            story.append(Spacer(1, 0.01*inch))
+        story.append(Spacer(1, 0.08*inch))
+
+    # LANGUAGES
     if sections['languages']:
-        story.append(Paragraph("LANGUAGES", section_style))
+        story.append(Paragraph("LANGUAGES KNOWN", section_style))
         story.append(Paragraph(sections['languages'], normal_style))
-    
+
     doc.build(story)
     buffer.seek(0)
-    
+
     with open(output_path, 'wb') as f:
         f.write(buffer.getvalue())
-    
+
     buffer.close()
 
 
