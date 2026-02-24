@@ -9,6 +9,7 @@ urlpatterns = [
     path('main_home/', views.main_home, name='main_home'),
     path('logout/', views.logout_view, name='logout'),
     path('upload_page/', views.upload_view, name='upload_page'),
-    path('download/<int:analysis_id>/', views.download_optimized_resume, name='download_resume')
+    path('download/<int:analysis_id>/', views.download_resume, name='download_resume'),
+    path('api/fix-resume/', views.fix_resume_api, name='fix_resume_api'),
 ]
 

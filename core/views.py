@@ -1,4 +1,4 @@
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse, Http404, JsonResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -6,16 +6,8 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 import os
 from .models import ResumeAnalysis
-from .utils import (
-    clean_resume_text,
-    extract_text_from_pdf,
-    extract_text_from_docx,
-    convert_docx_to_pdf,
-    parse_resume_sections,
-    extract_jd_keywords,
-    generate_ats_resume_text,
-    generate_ats_pdf
-)
+
+from .utils import extract_text_from_pdf, get_ai_optimized_resume, generate_ats_pdf, extract_text_from_docx
 
 
 # =====================================================
@@ -98,118 +90,116 @@ def logout_view(request):
 
 @login_required(login_url='login')
 def upload_view(request):
-    context = {}
-
     if request.method == "POST":
         resume_file = request.FILES.get("resume")
-        job_desc = request.POST.get("job_description", "").strip()
+        job_desc = request.POST.get("job_description", "")
 
-        if not resume_file or not job_desc:
-            messages.error(request, "Resume and Job Description are required.")
-            return render(request, "core/upload_page.html", context)
+        # 1. Get raw text
+        # raw_text = extract_text_from_pdf(resume_file)
+        file_name = resume_file.name.lower()
+
+        if file_name.endswith(".pdf"):
+            raw_text = extract_text_from_pdf(resume_file)
+        elif file_name.endswith(".docx"):
+            raw_text = extract_text_from_docx(resume_file)
+        else:
+            return JsonResponse({
+                "success": False,
+                "error": "Unsupported file format. Please upload PDF or DOCX."
+            })
+        
+        # 2. Let Gemini fix it (The AI Brain)
+        optimized_content = get_ai_optimized_resume(raw_text, job_desc)
+        
+        # 3. Save to your existing model
+        analysis = ResumeAnalysis.objects.create(
+            user=request.user,
+            resume_file=resume_file,
+            job_description=job_desc,
+            before_text=raw_text,
+            optimized_content=optimized_content
+        )
+        
+        # 4. Generate the new PDF
+        pdf_filename = f"optimized_{analysis.id}.pdf"
+        output_path = os.path.join('media', 'resumes', pdf_filename)
+        generate_ats_pdf(optimized_content, output_path)
+
+        return render(request, "core/upload_page.html", {
+            "optimized_text": optimized_content,
+            "analysis_id": analysis.id
+        })
+    return render(request, "core/upload_page.html")
+    
+
+@login_required(login_url='login')
+def fix_resume_api(request):
+    if request.method != "POST":
+        return JsonResponse({"success": False, "error": "Invalid request method"})
+
+    resume_file = request.FILES.get("resume")
+    job_desc = request.POST.get("job_description", "")
+
+    if not resume_file or not job_desc:
+        return JsonResponse({"success": False, "error": "Missing resume or job description"})
+
+    try:
+        file_name = resume_file.name.lower()
+
+        if file_name.endswith(".pdf"):
+            raw_text = extract_text_from_pdf(resume_file)
+        elif file_name.endswith(".docx"):
+            raw_text = extract_text_from_docx(resume_file)
+        else:
+            return JsonResponse({
+                "success": False,
+                "error": "Only PDF or DOCX files are supported"
+            })
+
+        optimized_content = get_ai_optimized_resume(raw_text, job_desc)
 
         analysis = ResumeAnalysis.objects.create(
             user=request.user,
             resume_file=resume_file,
-            job_description=job_desc
+            job_description=job_desc,
+            before_text=raw_text,
+            optimized_content=optimized_content
         )
 
-        file_path = analysis.resume_file.path
-
-        # -----------------------------
-        # FILE HANDLING
-        # -----------------------------
-        if file_path.endswith(".docx"):
-            convert_docx_to_pdf(file_path)
-            preview_pdf_url = analysis.resume_file.url.replace(".docx", ".pdf")
-            raw_text = extract_text_from_docx(file_path)
-
-        elif file_path.endswith(".pdf"):
-            preview_pdf_url = analysis.resume_file.url
-            raw_text = extract_text_from_pdf(file_path)
-
-        else:
-            messages.error(request, "Unsupported file format.")
-            return render(request, "core/upload_page.html", context)
-
-        # -----------------------------
-        # CLEAN + PARSE
-        # -----------------------------
-        cleaned_text = clean_resume_text(raw_text)
-        sections = parse_resume_sections(cleaned_text)
-
-        # -----------------------------
-        # ANALYZE JD & OPTIMIZE
-        # -----------------------------
-        jd_keywords = extract_jd_keywords(job_desc)
-        optimized_text = generate_ats_resume_text(sections, jd_keywords)
-
-        analysis.before_text = cleaned_text
-        analysis.after_text = optimized_text
-        analysis.save()
-
-        # -----------------------------
-        # GENERATE OPTIMIZED PDF
-        # -----------------------------
-        optimized_pdf_path = os.path.join('media', 'resumes', f"optimized_{analysis.id}.pdf")
-        generate_ats_pdf(sections, jd_keywords, optimized_pdf_path)
-
-        # -----------------------------
-        # PREPARE OPTIMIZED SECTIONS FOR DISPLAY
-        # -----------------------------
-        from .utils import (
-            optimize_professional_summary,
-            optimize_technical_skills,
-            optimize_work_experience,
-            optimize_projects,
-            format_projects_html
-        )
-
-        optimized_summary = optimize_professional_summary(sections['objective'], jd_keywords)
-        optimized_skills = optimize_technical_skills(sections['technical_skills'], jd_keywords)
-        optimized_experience = optimize_work_experience(sections['work_experience'], jd_keywords)
-        optimized_projects = optimize_projects(sections['projects'], jd_keywords)
-        optimized_projects_html = format_projects_html(optimized_projects)
-
-        # -----------------------------
-        # CONTEXT
-        # -----------------------------
-        context.update({
-            "analysis": analysis,
-            "preview_pdf_url": preview_pdf_url,
-            "file_type": "pdf",
-            "show_preview": True,
-
-            "name": sections["name"],
-            "phone": sections["phone"],
-            "email": sections["email"],
-            "dob": sections["dob"],
-            "location": sections["location"],
-
-            "objective": optimized_summary,
-            "education": sections["education_html"],
-            "projects": optimized_projects_html,
-
-            "technical_skills": ", ".join(optimized_skills),
-            "soft_skills": ", ".join(sections["soft_skills"]),
-            "languages": sections["languages"],
-            "work_experience": optimized_experience,
-
-            "optimized_pdf_url": f"/media/resumes/optimized_{analysis.id}.pdf"
+        return JsonResponse({
+            "success": True,
+            "before_text": raw_text,
+            "optimized_content": optimized_content,
+            "analysis_id": analysis.id
         })
 
-    return render(request, "core/upload_page.html", context)
+    except Exception as e:
+        return JsonResponse({"success": False, "error": str(e)})
 
+
+# def download_resume(request, analysis_id):
+#     analysis = ResumeAnalysis.objects.get(id=analysis_id)
+
+#     response = HttpResponse(
+#         analysis.optimized_content,
+#         content_type='text/plain'
+#     )
+#     response['Content-Disposition'] = 'attachment; filename="optimized_resume.txt"'
+#     return response
 
 @login_required(login_url='login')
-def download_optimized_resume(request, analysis_id):
-    analysis = get_object_or_404(ResumeAnalysis, id=analysis_id, user=request.user)
-    
-    pdf_path = os.path.join('media', 'resumes', f"optimized_{analysis.id}.pdf")
-    if not os.path.exists(pdf_path):
-        raise Http404("Optimized resume not found")
-    
-    with open(pdf_path, 'rb') as f:
-        response = HttpResponse(f.read(), content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename="ATS_Optimized_Resume.pdf"'
+def download_resume(request, analysis_id):
+    analysis = get_object_or_404(ResumeAnalysis, id=analysis_id)
+
+    pdf_filename = f"resume_{analysis.id}.pdf"
+    pdf_path = os.path.join("media", "generated", pdf_filename)
+
+    os.makedirs(os.path.dirname(pdf_path), exist_ok=True)
+
+    # Generate ATS-safe PDF
+    generate_ats_pdf(analysis.optimized_content, pdf_path)
+
+    with open(pdf_path, "rb") as pdf:
+        response = HttpResponse(pdf.read(), content_type="application/pdf")
+        response["Content-Disposition"] = f'attachment; filename="{pdf_filename}"'
         return response

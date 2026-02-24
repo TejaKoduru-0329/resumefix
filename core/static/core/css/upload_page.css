@@ -51,6 +51,7 @@ body {
 .navbar-toggler i{
     background: linear-gradient(-45deg, #D000F7, #24BAE3);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     font-size: 1.5rem;
     
@@ -61,12 +62,20 @@ body {
     box-shadow: 5px 5px 15px #c1c8d3, -5px -5px 15px #fff;
 }
 
-.card-box {
+/* .card-box {
     margin: 30px auto;
     padding: 40px;
     border-radius: 10px;
     box-shadow: 5px 5px 15px #c1c8d3, -5px -5px 15px #fff;
     overflow: hidden; 
+} */
+
+.card-box {
+    margin: 30px auto;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 5px 5px 15px #c1c8d3, -5px -5px 15px #fff;
+    overflow: visible;
 }
 
 .upload-section {
@@ -163,6 +172,7 @@ small {
 .paper-title {
     background: linear-gradient(-45deg, #D000F7, #24BAE3);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     font-size: 1.5rem;
     font-weight: bold;
@@ -218,9 +228,9 @@ small {
 /* ---- Mobile ---- */
 @media (max-width: 768px) {
     .preview-inner {
-        height: 350px;
+        height: 700px;
     }
-
+  
 }
 
 .download-btn {
@@ -231,7 +241,9 @@ small {
     color: #ffffff;
     background: linear-gradient(-45deg, #D000F7, #24BAE3);
     font-size: 1.2rem;
+    text-decoration: none;
 }
+
 
 .cv-btn {
     border: 1px dashed #cfd6e0;
@@ -372,5 +384,96 @@ small {
 }
 
 
+/* new-code */
+
+#beforePreview {
+    white-space: pre-wrap;
+}
 
 
+
+/* ==============================
+   Resume Preview Base
+============================== */
+.resume-preview {
+  font-family: Calibri, Arial, sans-serif;
+  font-size: 11px;
+  line-height: 1.35;
+  color: #000;
+}
+
+/* ==============================
+   Name
+============================== */
+.resume-preview .resume-name {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+/* ==============================
+   Section Headings
+============================== */
+.resume-preview .resume-heading {
+  font-size: 11px;
+  font-weight: bold;
+  margin-top: 8px;
+  margin-bottom: 2px;
+}
+
+/* Thin line ONLY below headings */
+.resume-preview .heading-line {
+  border: none;
+  border-top: 1px solid #999;
+  margin: 2px 0 6px 0;
+}
+
+/* ==============================
+   Normal Paragraph Text
+============================== */
+.resume-preview p {
+  font-size: 11px;
+  margin: 0 0 4px 0;
+  font-weight: normal;
+}
+
+/* ==============================
+   Education
+============================== */
+.resume-preview .edu-entry {
+  margin-bottom: 11px; /* gap between degrees */
+}
+
+.resume-preview .edu-college {
+  font-weight: bold; /* ONLY college/institution name */
+}
+
+/* ==============================
+   Project Titles
+============================== */
+.resume-preview .project-title {
+  font-weight: bold;
+  font-size: 11px;
+  margin: 4px 0 2px 0;
+}
+
+/* ==============================
+   Bullets (Projects & Soft Skills)
+============================== */
+.resume-preview .resume-bullets {
+  margin: 0 0 6px 24px; /* tab-like indent */
+  padding: 0;
+}
+
+.resume-preview .resume-bullets li {
+  font-size: 11px;
+  margin-bottom: 3px;
+}
+
+/* ==============================
+   Links (Email, GitHub, LinkedIn)
+============================== */
+.resume-preview a {
+  color: #000;
+  text-decoration: underline;
+}

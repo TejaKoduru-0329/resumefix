@@ -108,9 +108,9 @@
 
    
     <!-- Before & After Preview -->
-    {% if show_preview %}
-    <div class="container mt-5">
-        <div class="card-box">
+    
+    <div id="resultsSection" class="container mt-5" style="display: none;">
+        <div class="card-box preview-wrapper">
 
             <div class="row g-4 previews">
 
@@ -121,11 +121,16 @@
                         <h5 class="paper-title text-center">Before AI Fix</h5>
 
                         <div class="preview-inner pdf-scroll">
-                            <div class="pdf-wrapper">
+                            <!-- <div class="pdf-wrapper">
                                 <iframe
                                     src="{{ preview_pdf_url }}#toolbar=0&navpanes=0&scrollbar=0"
                                     class="pdf-frame" scrolling="no">
                                 </iframe>
+                            </div> -->
+
+                            <!-- Gemini ai -->
+                            <div id="beforePreview" class="p-3" style="white-space: pre-wrap; font-family: monospace; font-size: 12px;">
+
                             </div>
                         </div>
 
@@ -140,52 +145,9 @@
 
                         <div class="preview-inner">
                             <div class="resume-paper">
-                                <div class="ats-resume">
+                                <div class="ats-resume" id="afterPreview">
 
-                                    <div class="resume-header">
-                                        <h1 class="resume-name">{{ name }}</h1>
-                                        <p class="resume-contact">
-                                            {{ phone }} | {{ email }} | {{ dob }} | {{ location }}
-                                        </p>
-                                    </div>
-
-                                    <div class="resume-section">
-                                        <h2 class="section-title">Professional Summary</h2>
-                                        <p>{{ objective }}</p>
-                                    </div>
-
-                                    <div class="resume-section">
-                                        <h2 class="section-title">Technical Skills</h2>
-                                        <p>{{ technical_skills }}</p>
-                                    </div>
-
-                                    {% if work_experience %}
-                                    <div class="resume-section">
-                                        <h2 class="section-title">Work Experience</h2>
-                                        <ul>
-                                            {% for exp in work_experience %}
-                                            <li>{{ exp }}</li>
-                                            {% endfor %}
-                                        </ul>
-                                    </div>
-                                    {% endif %}
-
-                                    <div class="resume-section">
-                                        <h2 class="section-title">Projects</h2>
-                                        {{ projects|safe }}
-                                    </div>
-
-                                    <div class="resume-section">
-                                        <h2 class="section-title">Education</h2>
-                                        {{ education|safe }}
-                                    </div>
-
-                                    {% if languages %}
-                                    <div class="resume-section">
-                                        <h2 class="section-title">Languages</h2>
-                                        <p>{{ languages }}</p>
-                                    </div>
-                                    {% endif %}
+                                    
 
                                 </div>
 
@@ -198,9 +160,9 @@
             </div>
 
             <!-- Action Buttons -->
-            <div class="text-center mt-5">
-                <a href="{% url 'download_resume' analysis.id %}" class="download-btn" target="_blank">
-                    ⬇ Download AI Fixed Resume
+            <div class="downoald-section text-center mt-5">
+                <a href="#" id="downloadBtn" class="download-btn" target="_blank" style="text-decoration: none; display: none;">
+                    ⬇ Download AI Resume
                 </a>
             </div>
 
@@ -214,7 +176,7 @@
 
         
     </div>
-    {% endif %}
+  
     
 
 

@@ -1,9 +1,11 @@
+
 document.addEventListener("DOMContentLoaded", () => {
 
   /* ========= ELEMENT REFERENCES ========= */
 
-  const form = document.querySelector("form"); // ✅ FORM
+  const form = document.querySelector("form");
   const fileInput = document.getElementById("resumeInput");
+  const jdTextarea = document.querySelector(".jd-box textarea");
 
   const uploadIconWrap = document.getElementById("uploadIconWrap");
   const uploadStatus = document.getElementById("uploadStatus");
@@ -14,7 +16,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const errorText = document.getElementById("fileError");
 
   const loading = document.getElementById("loading");
-  const jdTextarea = document.querySelector(".jd-box textarea");
+  const resultsSection = document.getElementById("resultsSection");
+
+  const beforePreview = document.getElementById("beforePreview");
+  const afterPreview = document.getElementById("afterPreview");
 
   const formError = document.getElementById("formError");
   const formErrorText = document.getElementById("formErrorText");
@@ -24,30 +29,16 @@ document.addEventListener("DOMContentLoaded", () => {
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
   ];
 
-  /* ========= FORM SUBMIT (VALIDATION + LOADER) ========= */
+  /* ========= HELPERS ========= */
 
-  form.addEventListener("submit", function (e) {
+  function showError(msg) {
+    formErrorText.innerText = msg;
+    formError.style.display = "flex";
+  }
 
-    // ❌ Resume missing
-    if (!fileInput.files.length) {
-      e.preventDefault();
-      showError("Please upload your resume");
-      return;
-    }
-
-    // ❌ JD missing
-    if (!jdTextarea.value.trim()) {
-      e.preventDefault();
-      showError("Please paste the job description");
-      return;
-    }
-
-    // ✅ All good
-    hideError();
-
-    // show loader (Django will reload page)
-    loading.style.display = "block";
-  });
+  function hideError() {
+    formError.style.display = "none";
+  }
 
   /* ========= FILE UPLOAD UI ========= */
 
@@ -64,9 +55,8 @@ document.addEventListener("DOMContentLoaded", () => {
     errorText.style.display = "none";
     hideError();
 
-    // uploading UI
-    uploadIconWrap.innerHTML =
-      `<div class="spinner-border text-primary"></div>`;
+    // Upload animation
+    uploadIconWrap.innerHTML = `<div class="spinner-border text-primary"></div>`;
     uploadStatus.innerText = "Uploading…";
     uploadSub.innerText = "";
     fileRow.style.display = "none";
@@ -96,20 +86,242 @@ document.addEventListener("DOMContentLoaded", () => {
     hideError();
   };
 
-  /* ========= ERROR HELPERS ========= */
+  /* ========= FORM SUBMIT (AI CALL) ========= */
 
-  function showError(msg) {
-    formErrorText.innerText = msg;
-    formError.style.display = "flex";
-  }
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault();
 
-  function hideError() {
-    formError.style.display = "none";
-  }
+    hideError();
+
+    if (!fileInput.files.length || !jdTextarea.value.trim()) {
+      showError("Please provide both a resume and a job description");
+      return;
+    }
+
+    loading.style.display = "block";
+    resultsSection.style.display = "none";
+
+    const formData = new FormData(form);
+
+    try {
+      const response = await fetch("/api/fix-resume/", {
+        method: "POST",
+        body: formData,
+        headers: {
+          "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value
+        }
+      });
+
+      const data = await response.json();
+
+      loading.style.display = "none";
+
+      if (!data.success) {
+        showError(data.error || "AI failed. Please try again.");
+        return;
+      }
+
+      // ✅ SET PREVIEW CONTENT
+      beforePreview.innerText = data.before_text;
+      // afterPreview.innerHTML = data.optimized_content.replace(/\n/g, "<br>");
+      afterPreview.innerHTML = renderAIContent(data.optimized_content);
+
+      // ✅ SHOW PREVIEW
+      resultsSection.style.display = "block";
+
+      // ✅ DOWNLOAD BUTTON
+      const downloadBtn = document.getElementById("downloadBtn");
+      if (downloadBtn) {
+        downloadBtn.style.display = "inline-block";
+        downloadBtn.href = `/download/${data.analysis_id}/`;
+      }
+
+      // Scroll to preview
+      resultsSection.scrollIntoView({ behavior: "smooth" });
+
+    } catch (err) {
+      loading.style.display = "none";
+      showError("Server error. Please try again later.");
+      console.error(err);
+    }
+  });
 
   jdTextarea.addEventListener("input", hideError);
 
+
+  // function renderAIContent(text) {
+
+  // // Fix heading naming issues
+  // text = text
+  //   .replace(/\bTECHNICAL SOFT SKILLS\b/g, "TECHNICAL SKILLS")
+  //   .replace(/\bSOFT SOFT SKILLS\b/g, "SOFT SKILLS")
+  //   .replace(/\bSKILLS\b/g, "SOFT SKILLS");
+
+  // // Bold name (first line)
+  // text = text.replace(/^(.+)$/m, "<strong>$1</strong>");
+
+  // return text
+  //   // Headings with underline only
+  //   .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong><hr class='heading-line'>")
+
+  //   // Bullet points
+  //   .replace(/^[-*]\s+(.*)$/gm, "• $1")
+
+  //   // Line breaks
+  //   .replace(/\n/g, "<br>");
+  // }
+
+
+  //   function renderAIContent(text) {
+
+  //   // Fix wrong headings
+  //   text = text
+  //     .replace(/\bTECHNICAL SOFT SKILLS\b/g, "TECHNICAL SKILLS")
+  //     .replace(/\bSOFT SOFT SKILLS\b/g, "SOFT SKILLS");
+  //   let currentSection = "";
+  //   const lines = text.split("\n");
+  //   let html = `<div class="resume-preview">`;
+
+  //   lines.forEach((line, index) => {
+
+  //     // Name (first line)
+  //     if (index === 0) {
+  //       html += `<div class="resume-name">${line}</div>`;
+  //       return;
+  //     }
+
+  //     // Headings (**HEADING**)
+  //     if (/^\*\*(.*?)\*\*$/.test(line)) {
+  //       currentSection = line.replace(/\*\*/g, "");
+  //       html += `
+  //         <div class="resume-heading">${currentSection}</div>
+  //         <hr class="heading-line">
+  //       `;
+  //       return;
+  //     }
+
+  //     // Education: college line
+  //     if (line.includes("|") && line.match(/\d{4}/)) {
+  //       html += `<div class="edu-entry"><div class="edu-college">${line}</div>`;
+  //       return;
+  //     }
+
+  //     // if (line.includes("|") && line.match(/\d{4}/)) {
+  //     //   html += `
+  //     //     <div class="edu-entry">
+  //     //       <div class="edu-college">
+  //     //         ${line.split("|")[0].trim()}
+  //     //       </div>
+  //     //       <div class="edu-meta">
+  //     //         ${line.split("|").slice(1).join("|").trim()}
+  //     //       </div>
+  //     //     </div>
+  //     //   `;
+  //     //   return;
+  //     // }
+
+  //     // Degree line
+  //     if (line.toLowerCase().includes("cgpa") || line.toLowerCase().includes("percentage")) {
+  //       html += `<div>${line}</div></div>`;
+  //       return;
+  //     }
+
+  //     // Technical skills: key:value pairs
+  //     if (line.includes(":")) {
+  //       html += `<p><strong>${line.split(":")[0]}:</strong> ${line.split(":")[1]}</p>`;
+  //       return;
+  //     }
+
+  //     // Bullet
+  //     // if (line.startsWith("•") || line.startsWith("-")) {
+  //     //   html += `<ul><li>${line.replace(/^[-•]\s*/, "")}</li></ul>`;
+  //     //   return;
+  //     // }
+
+  //     // Project title Bold
+  //     if (
+  //       currentSection === "PROJECTS" && !line.startsWith("•") && line.trim() !== ""
+  //     ) {
+  //       html += `<p><strong>${line}</strong></p>`;
+  //       return;
+  //     }
+
+  //     // Bullets with indent
+  //     if (line.startsWith("•")) {
+  //       html += `<ul class="resume-bullets"><li>${line.substring(1)}</li></ul>`;
+  //       return;
+  //     }
+
+  //     // Normal paragraph
+  //     if (line.trim()) {
+  //       html += `<p>${line}</p>`;
+  //     }
+  //   });
+
+  //   html += `</div>`;
+  //   return html;
+  //   }
+  // });
+
+
+
+  function renderAIContent(text) {
+    let currentSection = "";
+    const lines = text.split("\n");
+    let html = `<div class="resume-preview">`;
+
+    lines.forEach((line, index) => {
+
+      // NAME (only first line bold, big)
+      if (index === 0) {
+        html += `<div class="resume-name">${line}</div>`;
+        return;
+      }
+
+      // HEADINGS (**HEADING**)
+      if (/^\*\*(.+)\*\*$/.test(line)) {
+        currentSection = line.replace(/\*/g, "").trim();
+        html += `
+          <div class="resume-heading">${currentSection}</div>
+          <hr class="heading-line">
+        `;
+        return;
+      }
+
+      // BULLETS (already normalized by Gemini to •)
+      if (line.trim().startsWith("•")) {
+        html += `
+          <ul class="resume-bullets">
+            <li>${line.replace(/^•\s*/, "")}</li>
+          </ul>
+        `;
+        return;
+      }
+
+      // PROJECT TITLES (first non-bullet line inside PROJECTS)
+      if (
+        currentSection === "PROJECTS" &&
+        line.trim() &&
+        !line.startsWith("•")
+      ) {
+        html += `<p class="project-title">${line}</p>`;
+        return;
+      }
+
+      // NORMAL TEXT
+      if (line.trim()) {
+        html += `<p>${line}</p>`;
+      }
+    });
+
+    html += `</div>`;
+    return html;
+  }
+
+  
 });
+
+
 
 
 
