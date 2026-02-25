@@ -265,59 +265,296 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
+  // function renderAIContent(text) {
+  //   const lines = text.split("\n");
+  //   let html = "";
+
+  //   let currentSection = "";
+  //   let i = 0;
+
+  //   while (i < lines.length) {
+  //     let line = lines[i].trim();
+
+  //     if (!line) {
+  //       i++;
+  //       continue;
+  //     }
+
+  //     /* =========================
+  //       NAME (FIRST LINE)
+  //     ========================= */
+  //     if (i === 0) {
+  //       html += `<div class="resume-name">${line}</div>`;
+  //       i++;
+  //       continue;
+  //     }
+
+  //     /* =========================
+  //       SECTION HEADINGS
+  //     ========================= */
+  //     if (line.startsWith("**") && line.endsWith("**")) {
+  //       currentSection = line.replace(/\*/g, "");
+  //       html += `
+  //         <div class="resume-heading">${currentSection}</div>
+  //         <hr class="heading-line">
+  //       `;
+  //       i++;
+  //       continue;
+  //     }
+
+  //     /* =========================
+  //       EDUCATION (STRICT 2 LINES)
+  //     ========================= */
+  //     if (currentSection === "EDUCATION") {
+  //       const line1 = line;
+  //       const line2 = lines[i + 1] ? lines[i + 1].trim() : "";
+
+  //       html += `
+  //         <div class="edu-entry">
+  //           <div class="edu-college">${line1}</div>
+  //           <div class="edu-meta">${line2}</div>
+  //         </div>
+  //       `;
+  //       i += 2;
+  //       continue;
+  //     }
+
+  //     /* =========================
+  //       BULLETS
+  //     ========================= */
+  //     if (line.startsWith("•")) {
+  //       html += `<ul class="resume-bullets"><li>${line.slice(1).trim()}</li></ul>`;
+  //       i++;
+  //       continue;
+  //     }
+
+  //     /* =========================
+  //       PROJECT / WORK EXPERIENCE TITLE
+  //     ========================= */
+  //     if (currentSection === "PROJECTS" || currentSection === "WORK EXPERIENCE") {
+  //       html += `<div class="project-title">${line}</div>`;
+  //       i++;
+  //       continue;
+  //     }
+
+  //     /* =========================
+  //       TECHNICAL SKILLS (bold sub-headings)
+  //     ========================= */
+  //     if (currentSection === "TECHNICAL SKILLS" && line.includes(":")) {
+  //       const [left, right] = line.split(":", 2);
+  //       html += `
+  //         <p>
+  //           <strong>${left}:</strong> ${right.trim()}
+  //         </p>
+  //       `;
+  //       i++;
+  //       continue;
+  //     }
+
+  //     /* =========================
+  //       NORMAL PARAGRAPH
+  //     ========================= */
+  //     html += `<p>${line}</p>`;
+  //     i++;
+  //   }
+
+  //   return html;
+  // }
+
+
+
+  // function renderAIContent(text) {
+  //   const lines = text.split("\n");
+  //   let html = "";
+
+  //   let currentSection = "";
+  //   let bulletBuffer = [];
+  //   let i = 0;
+
+  //   function flushBullets() {
+  //     if (bulletBuffer.length) {
+  //       html += `<ul class="resume-bullets">`;
+  //       bulletBuffer.forEach(b => {
+  //         html += `<li>${b}</li>`;
+  //       });
+  //       html += `</ul>`;
+  //       bulletBuffer = [];
+  //     }
+  //   }
+
+  //   while (i < lines.length) {
+  //     const line = lines[i].trim();
+
+  //     if (!line) {
+  //       i++;
+  //       continue;
+  //     }
+
+  //     /* NAME */
+  //     if (i === 0) {
+  //       html += `<div class="resume-name">${line}</div>`;
+  //       i++;
+  //       continue;
+  //     }
+
+  //     /* SECTION HEADINGS */
+  //     if (line.startsWith("**") && line.endsWith("**")) {
+  //       flushBullets();
+  //       currentSection = line.replace(/\*/g, "");
+  //       html += `
+  //         <div class="resume-heading">${currentSection}</div>
+  //         <hr class="heading-line">
+  //       `;
+  //       i++;
+  //       continue;
+  //     }
+
+  //     /* EDUCATION (2-line block + gap) */
+  //     if (currentSection === "EDUCATION") {
+  //       const line1 = line;
+  //       const line2 = lines[i + 1] ? lines[i + 1].trim() : "";
+  //       html += `
+  //         <div class="edu-entry">
+  //           <div class="edu-college">${line1}</div>
+  //           <div class="edu-meta">${line2}</div>
+  //         </div>
+  //       `;
+  //       i += 2;
+  //       continue;
+  //     }
+
+  //     /* BULLETS */
+  //     if (line.startsWith("•")) {
+  //       bulletBuffer.push(line.slice(1).trim());
+  //       i++;
+  //       continue;
+  //     }
+
+  //     /* PROJECT / WORK EXPERIENCE TITLE */
+  //     if (currentSection === "PROJECTS" || currentSection === "WORK EXPERIENCE") {
+  //       flushBullets();
+  //       html += `<div class="project-title">${line}</div>`;
+  //       i++;
+  //       continue;
+  //     }
+
+  //     /* TECHNICAL SKILLS – bold sub heading */
+  //     if (currentSection === "TECHNICAL SKILLS" && line.includes(":")) {
+  //       const [left, right] = line.split(":", 2);
+  //       html += `<p><strong>${left}:</strong> ${right.trim()}</p>`;
+  //       i++;
+  //       continue;
+  //     }
+
+  //     /* NORMAL TEXT */
+  //     flushBullets();
+  //     html += `<p>${line}</p>`;
+  //     i++;
+  //   }
+
+  //   flushBullets();
+  //   return html;
+  // }
   function renderAIContent(text) {
-    let currentSection = "";
     const lines = text.split("\n");
-    let html = `<div class="resume-preview">`;
+    let html = "";
 
-    lines.forEach((line, index) => {
+    let currentSection = "";
+    let bulletBuffer = [];
+    let i = 0;
 
-      // NAME (only first line bold, big)
-      if (index === 0) {
-        html += `<div class="resume-name">${line}</div>`;
-        return;
+    function flushBullets() {
+      if (bulletBuffer.length) {
+        html += `<ul class="resume-bullets">`;
+        bulletBuffer.forEach(b => {
+          html += `<li>${b}</li>`;
+        });
+        html += `</ul>`;
+        bulletBuffer = [];
+      }
+    }
+
+    while (i < lines.length) {
+      const line = lines[i].trim();
+
+      if (!line) {
+        i++;
+        continue;
       }
 
-      // HEADINGS (**HEADING**)
-      if (/^\*\*(.+)\*\*$/.test(line)) {
-        currentSection = line.replace(/\*/g, "").trim();
+      /* NAME */
+      if (i === 0) {
+        html += `<div class="resume-name">${line}</div>`;
+        i++;
+        continue;
+      }
+
+      /* SECTION HEADINGS */
+      if (line.startsWith("**") && line.endsWith("**")) {
+        flushBullets();
+        currentSection = line.replace(/\*/g, "");
         html += `
           <div class="resume-heading">${currentSection}</div>
           <hr class="heading-line">
         `;
-        return;
+        i++;
+        continue;
       }
 
-      // BULLETS (already normalized by Gemini to •)
-      if (line.trim().startsWith("•")) {
-        html += `
-          <ul class="resume-bullets">
-            <li>${line.replace(/^•\s*/, "")}</li>
-          </ul>
-        `;
-        return;
-      }
-
-      // PROJECT TITLES (first non-bullet line inside PROJECTS)
+      /* EDUCATION — ONLY 2-LINE BLOCK */
       if (
-        currentSection === "PROJECTS" &&
-        line.trim() &&
+        currentSection === "EDUCATION" &&
+        lines[i + 1] &&
+        lines[i + 1].includes("|")
+      ) {
+        const collegeLine = line;
+        const degreeLine = lines[i + 1].trim();
+
+        html += `
+          <div class="edu-entry">
+            <div class="edu-college">${collegeLine}</div>
+            <div class="edu-meta">${degreeLine}</div>
+          </div>
+        `;
+        i += 2;
+        continue;
+      }
+
+      /* BULLETS */
+      if (line.startsWith("•")) {
+        bulletBuffer.push(line.slice(1).trim());
+        i++;
+        continue;
+      }
+
+      /* PROJECT / WORK EXPERIENCE TITLE */
+      if (
+        (currentSection === "PROJECTS" || currentSection === "WORK EXPERIENCE") &&
         !line.startsWith("•")
       ) {
-        html += `<p class="project-title">${line}</p>`;
-        return;
+        flushBullets();
+        html += `<div class="project-title">${line}</div>`;
+        i++;
+        continue;
       }
 
-      // NORMAL TEXT
-      if (line.trim()) {
-        html += `<p>${line}</p>`;
+      /* TECHNICAL SKILLS – inline bold sub-heading */
+      if (currentSection === "TECHNICAL SKILLS" && line.includes(":")) {
+        const [left, right] = line.split(":", 2);
+        html += `<p class="skill-line"><strong>${left}:</strong> ${right.trim()}</p>`;
+        i++;
+        continue;
       }
-    });
 
-    html += `</div>`;
+      /* NORMAL TEXT */
+      flushBullets();
+      html += `<p>${line}</p>`;
+      i++;
+    }
+
+    flushBullets();
     return html;
   }
-
   
 });
 

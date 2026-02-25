@@ -1163,20 +1163,311 @@ Job Description:
 
 
 
+# from reportlab.platypus import (
+#     SimpleDocTemplate,
+#     Paragraph,
+#     Spacer,
+#     ListFlowable,
+#     ListItem,
+#     Indenter,
+# )
+# from reportlab.lib.styles import ParagraphStyle
+# from reportlab.lib.pagesizes import A4
+
+# # --------------------------------------------------
+# # PDF GENERATION (HELVETICA – PRODUCTION SAFE)
+# # --------------------------------------------------
+
+# def generate_ats_pdf(text, output_path):
+
+#     doc = SimpleDocTemplate(
+#         output_path,
+#         pagesize=A4,
+#         leftMargin=40,
+#         rightMargin=40,
+#         topMargin=40,
+#         bottomMargin=40,
+#     )
+
+#     story = []
+
+#     # -----------------------------
+#     # STYLES
+#     # -----------------------------
+
+#     name_style = ParagraphStyle(
+#         "Name",
+#         fontName="Helvetica-Bold",
+#         fontSize=14,
+#         spaceAfter=8,
+#     )
+
+#     heading_style = ParagraphStyle(
+#         "Heading",
+#         fontName="Helvetica-Bold",
+#         fontSize=11,
+#         spaceBefore=8,
+#         spaceAfter=4,
+#     )
+
+#     body_style = ParagraphStyle(
+#         "Body",
+#         fontName="Helvetica",
+#         fontSize=11,
+#         spaceAfter=6,
+#     )
+
+#     project_title_style = ParagraphStyle(
+#         "ProjectTitle",
+#         fontName="Helvetica-Bold",
+#         fontSize=11,
+#         spaceBefore=4,
+#         spaceAfter=2,
+#     )
+
+#     # -----------------------------
+#     # PARSING STATE
+#     # -----------------------------
+
+#     lines = text.split("\n")
+#     current_section = ""
+#     buffer_bullets = []
+
+#     # -----------------------------
+#     # HELPER: FLUSH BULLETS
+#     # -----------------------------
+
+#     def flush_bullets(parent_indent=18):
+#         nonlocal buffer_bullets
+#         if buffer_bullets:
+#             story.append(Indenter(left=parent_indent, right=0))
+#             story.append(
+#                 ListFlowable(
+#                     [
+#                         ListItem(Paragraph(item, body_style))
+#                         for item in buffer_bullets
+#                     ],
+#                     bulletType="bullet",
+#                     start="•",
+#                     leftIndent=0,  # parent-based indentation
+#                 )
+#             )
+#             story.append(Indenter(left=-parent_indent, right=0))
+#             buffer_bullets = []
+
+#     # -----------------------------
+#     # MAIN LOOP
+#     # -----------------------------
+
+#     for index, line in enumerate(lines):
+
+#         line = line.strip()
+#         if not line:
+#             continue
+
+#         # NAME (FIRST LINE)
+#         if index == 0:
+#             story.append(Paragraph(line, name_style))
+#             continue
+
+#         # SECTION HEADING
+#         if line.startswith("**") and line.endswith("**"):
+#             flush_bullets()
+#             current_section = line.replace("*", "")
+#             story.append(Paragraph(current_section, heading_style))
+#             continue
+
+#         # BULLET LINE
+#         if line.startswith("•"):
+#             buffer_bullets.append(line[1:].strip())
+#             continue
+
+#         # PROJECT / WORK EXPERIENCE TITLE
+#         if current_section in ("PROJECTS", "WORK EXPERIENCE"):
+#             flush_bullets()
+#             story.append(Paragraph(line, project_title_style))
+#             continue
+
+#         # NORMAL PARAGRAPH
+#         flush_bullets()
+#         story.append(Paragraph(line, body_style))
+
+#     # Flush any remaining bullets
+#     flush_bullets()
+
+#     # -----------------------------
+#     # BUILD PDF
+#     # -----------------------------
+
+#     doc.build(story)
+
+
+
+# from reportlab.platypus import (
+#     SimpleDocTemplate, Paragraph, Spacer,
+#     ListFlowable, ListItem, Indenter,
+#     KeepTogether, HRFlowable, PageBreak
+# )
+# from reportlab.lib.styles import ParagraphStyle
+# from reportlab.lib.pagesizes import A4
+
+# def generate_ats_pdf(text, output_path):
+
+#     doc = SimpleDocTemplate(
+#         output_path,
+#         pagesize=A4,
+#         leftMargin=40,
+#         rightMargin=40,
+#         topMargin=40,
+#         bottomMargin=40,
+#     )
+
+#     story = []
+
+#     # ---------------- STYLES ----------------
+#     name_style = ParagraphStyle(
+#         "Name", fontName="Helvetica-Bold", fontSize=14, spaceAfter=6
+#     )
+
+#     heading_style = ParagraphStyle(
+#         "Heading", fontName="Helvetica-Bold", fontSize=11, spaceBefore=8, spaceAfter=2
+#     )
+
+#     body_style = ParagraphStyle(
+#         "Body", fontName="Helvetica", fontSize=11, spaceAfter=4
+#     )
+
+#     bold_style = ParagraphStyle(
+#         "Bold", fontName="Helvetica-Bold", fontSize=11, spaceAfter=2
+#     )
+
+#     bullet_style = ParagraphStyle(
+#         "Bullet", fontName="Helvetica", fontSize=11, spaceAfter=3
+#     )
+
+#     project_title_style = ParagraphStyle(
+#         "ProjectTitle", fontName="Helvetica-Bold", fontSize=11, spaceBefore=6, spaceAfter=2
+#     )
+
+#     lines = text.split("\n")
+#     current_section = ""
+#     bullets = []
+
+
+#     def flush_bullets(parent_indent=18):
+#         nonlocal bullets
+#         if bullets:
+#             story.append(Indenter(left=parent_indent))
+#             story.append(
+#                 ListFlowable(
+#                     [
+#                         Paragraph(
+#                             item,
+#                             ParagraphStyle(
+#                                 "BulletText",
+#                                 fontName="Helvetica",
+#                                 fontSize=11,
+#                                 leftIndent=8,      # space between bullet & text
+#                                 spaceAfter=3
+#                             ),
+#                             bulletText="•"
+#                         )
+#                         for item in bullets
+#                     ],
+#                     start="•",
+#                     leftIndent=0,
+#                     bulletType="bullet",
+#                     spaceAfter=6
+#                 )
+#             )
+#             story.append(Indenter(left=-parent_indent))
+#             bullets = []
+
+#     i = 0
+#     while i < len(lines):
+#         line = lines[i].strip()
+#         if not line:
+#             i += 1
+#             continue
+
+#         # NAME
+#         if i == 0:
+#             story.append(Paragraph(line, name_style))
+#             i += 1
+#             continue
+
+#         # SECTION HEADINGS
+#         if line.startswith("**") and line.endswith("**"):
+#             flush_bullets()
+#             current_section = line.replace("*", "")
+#             story.append(Paragraph(current_section, heading_style))
+#             story.append(HRFlowable(width="100%", thickness=0.7))
+#             i += 1
+#             continue
+
+#         # EDUCATION (2-line strict handling)
+#         if current_section == "EDUCATION":
+#             line1 = line
+#             line2 = lines[i + 1].strip() if i + 1 < len(lines) else ""
+
+#             # enforce separator
+#             if "|" not in line1 and line1.split()[-1].isdigit():
+#                 parts = line1.rsplit(" ", 1)
+#                 line1 = f"{parts[0]} | {parts[1]}"
+
+#             story.append(
+#                 KeepTogether([
+#                     Paragraph(line1, bold_style),
+#                     Paragraph(line2, body_style),
+#                     Spacer(1, 8)
+#                 ])
+#             )
+#             i += 2
+#             continue
+
+#         # BULLETS
+#         if line.startswith("•"):
+#             bullets.append(line[1:].strip())
+#             i += 1
+#             continue
+
+#         # PROJECT / WORK EXPERIENCE TITLES
+#         if current_section in ("PROJECTS", "WORK EXPERIENCE"):
+#             flush_bullets()
+#             story.append(Paragraph(line, project_title_style))
+#             i += 1
+#             continue
+
+#         # TECHNICAL SKILLS (sub-heading bold)
+#         if current_section == "TECHNICAL SKILLS" and ":" in line:
+#             left, right = line.split(":", 1)
+#             story.append(
+#                 Paragraph(
+#                     f"<b>{left}:</b> {right.strip()}",
+#                     body_style
+#                 )
+#             )
+#             i += 1
+#             continue
+
+#         # NORMAL TEXT
+#         flush_bullets()
+#         story.append(Paragraph(line, body_style))
+#         i += 1
+
+#     flush_bullets()
+#     doc.build(story)
+
+
+
 from reportlab.platypus import (
-    SimpleDocTemplate,
-    Paragraph,
-    Spacer,
-    ListFlowable,
-    ListItem,
-    Indenter,
+    SimpleDocTemplate, Paragraph, Spacer,
+    ListFlowable, Indenter,
+    KeepTogether, HRFlowable
 )
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.pagesizes import A4
 
-# --------------------------------------------------
-# PDF GENERATION (HELVETICA – PRODUCTION SAFE)
-# --------------------------------------------------
 
 def generate_ats_pdf(text, output_path):
 
@@ -1191,112 +1482,115 @@ def generate_ats_pdf(text, output_path):
 
     story = []
 
-    # -----------------------------
-    # STYLES
-    # -----------------------------
-
-    name_style = ParagraphStyle(
-        "Name",
-        fontName="Helvetica-Bold",
-        fontSize=14,
-        spaceAfter=8,
-    )
-
-    heading_style = ParagraphStyle(
-        "Heading",
-        fontName="Helvetica-Bold",
-        fontSize=11,
-        spaceBefore=8,
-        spaceAfter=4,
-    )
-
-    body_style = ParagraphStyle(
-        "Body",
-        fontName="Helvetica",
-        fontSize=11,
-        spaceAfter=4,
-    )
-
-    project_title_style = ParagraphStyle(
-        "ProjectTitle",
-        fontName="Helvetica-Bold",
-        fontSize=11,
-        spaceBefore=4,
-        spaceAfter=2,
-    )
-
-    # -----------------------------
-    # PARSING STATE
-    # -----------------------------
+    # ---------- STYLES ----------
+    name_style = ParagraphStyle("Name", fontName="Helvetica-Bold", fontSize=14, spaceAfter=6)
+    heading_style = ParagraphStyle("Heading", fontName="Helvetica-Bold", fontSize=11)
+    body_style = ParagraphStyle("Body", fontName="Helvetica", fontSize=11, spaceAfter=6)
+    bold_style = ParagraphStyle("Bold", fontName="Helvetica-Bold", fontSize=11)
+    bullet_style = ParagraphStyle("Bullet", fontName="Helvetica", fontSize=11, leftIndent=0, spaceAfter=3)
+    project_title_style = ParagraphStyle("ProjectTitle", fontName="Helvetica-Bold", fontSize=11)
 
     lines = text.split("\n")
-    current_section = ""
-    buffer_bullets = []
 
-    # -----------------------------
-    # HELPER: FLUSH BULLETS
-    # -----------------------------
+    current_section = None
+    section_elements = []  
+    bullets = []
 
-    def flush_bullets(parent_indent=18):
-        nonlocal buffer_bullets
-        if buffer_bullets:
-            story.append(Indenter(left=parent_indent, right=0))
-            story.append(
+    def flush_bullets_into_section():
+        nonlocal bullets, section_elements
+        if bullets:
+            section_elements.append(
                 ListFlowable(
                     [
-                        ListItem(Paragraph(item, body_style))
-                        for item in buffer_bullets
+                        Paragraph(
+                            b.lstrip("•").strip(), 
+                            bullet_style, 
+                            bulletText="•"
+                        )
+                        for b in bullets
                     ],
+                    leftIndent=18,
                     bulletType="bullet",
-                    start="•",
-                    leftIndent=0,  # parent-based indentation
+                    spaceAfter=6
                 )
             )
-            story.append(Indenter(left=-parent_indent, right=0))
-            buffer_bullets = []
+            bullets = []
 
-    # -----------------------------
-    # MAIN LOOP
-    # -----------------------------
+    def flush_section():
+        nonlocal section_elements
+        if section_elements:
+            story.append(KeepTogether(section_elements))
+            section_elements = []
 
-    for index, line in enumerate(lines):
+    i = 0
+    while i < len(lines):
+        line = lines[i].strip()
 
-        line = line.strip()
         if not line:
+            i += 1
             continue
 
-        # NAME (FIRST LINE)
-        if index == 0:
+        # NAME
+        if i == 0:
             story.append(Paragraph(line, name_style))
+            i += 1
             continue
 
         # SECTION HEADING
         if line.startswith("**") and line.endswith("**"):
-            flush_bullets()
+            flush_bullets_into_section()
+            flush_section()
+
             current_section = line.replace("*", "")
-            story.append(Paragraph(current_section, heading_style))
+
+            section_elements = [
+                Paragraph(current_section, heading_style),
+                HRFlowable(width="100%", thickness=0.7),
+                Spacer(1, 4)
+            ]
+            i += 1
             continue
 
-        # BULLET LINE
+        # EDUCATION (2-line fixed)
+        if current_section == "EDUCATION":
+            line1 = line
+            line2 = lines[i + 1].strip() if i + 1 < len(lines) else ""
+
+            section_elements.append(Paragraph(line1, bold_style))
+            section_elements.append(Paragraph(line2, body_style))
+            section_elements.append(Spacer(1, 8))
+
+            i += 2
+            continue
+
+        # BULLETS
         if line.startswith("•"):
-            buffer_bullets.append(line[1:].strip())
+            bullets.append(line)
+            i += 1
             continue
 
         # PROJECT / WORK EXPERIENCE TITLE
         if current_section in ("PROJECTS", "WORK EXPERIENCE"):
-            flush_bullets()
-            story.append(Paragraph(line, project_title_style))
+            flush_bullets_into_section()
+            section_elements.append(Paragraph(line, project_title_style))
+            i += 1
             continue
 
-        # NORMAL PARAGRAPH
-        flush_bullets()
-        story.append(Paragraph(line, body_style))
+        # TECHNICAL SKILLS
+        if current_section == "TECHNICAL SKILLS" and ":" in line:
+            left, right = line.split(":", 1)
+            section_elements.append(
+                Paragraph(f"<b>{left}:</b> {right.strip()}", body_style)
+            )
+            i += 1
+            continue
 
-    # Flush any remaining bullets
-    flush_bullets()
+        # NORMAL TEXT
+        flush_bullets_into_section()
+        section_elements.append(Paragraph(line, body_style))
+        i += 1
 
-    # -----------------------------
-    # BUILD PDF
-    # -----------------------------
+    flush_bullets_into_section()
+    flush_section()
 
     doc.build(story)

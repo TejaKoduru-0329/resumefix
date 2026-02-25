@@ -132,6 +132,8 @@ small {
     border: none;
     padding: 20px;
     resize: none;
+    scrollbar-width: thin; 
+    scrollbar-color: rgba(111, 0, 255, 0.6) transparent;
 }
 
 .fix-my-resume-btn {
@@ -390,13 +392,12 @@ small {
     white-space: pre-wrap;
 }
 
-
 /* ==============================
    Resume Preview Base
 ============================== */
-.resume-preview {
-  font-family: Calibri, Arial, sans-serif;
-  font-size: 11px;
+#afterPreview {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 15px;
   line-height: 1.35;
   color: #000;
 }
@@ -404,75 +405,113 @@ small {
 /* ==============================
    Name
 ============================== */
-.resume-preview .resume-name {
-  font-size: 14px;
+#afterPreview .resume-name {
+  font-size: 19px;
   font-weight: bold;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 /* ==============================
    Section Headings
 ============================== */
-.resume-preview .resume-heading {
-  font-size: 11px;
+#afterPreview .resume-heading {
+  font-size: 15px;
   font-weight: bold;
-  margin-top: 8px;
+  margin-top: 10px;
   margin-bottom: 2px;
 }
 
-/* Thin line ONLY below headings */
-.resume-preview .heading-line {
+#afterPreview .heading-line {
   border: none;
   border-top: 1px solid #999;
-  margin: 2px 0 6px 0;
+  margin: 2px 0 6px;
 }
 
 /* ==============================
-   Normal Paragraph Text
+   Paragraphs
 ============================== */
-.resume-preview p {
-  font-size: 11px;
+#afterPreview p {
   margin: 0 0 4px 0;
-  font-weight: normal;
 }
 
 /* ==============================
    Education
 ============================== */
-.resume-preview .edu-entry {
-  margin-bottom: 11px; /* gap between degrees */
+#afterPreview .edu-entry {
+  margin-bottom: 10px;
 }
 
-.resume-preview .edu-college {
-  font-weight: bold; /* ONLY college/institution name */
-}
-
-/* ==============================
-   Project Titles
-============================== */
-.resume-preview .project-title {
+#afterPreview .edu-college {
   font-weight: bold;
-  font-size: 11px;
-  margin: 4px 0 2px 0;
+}
+
+#afterPreview .edu-meta {
+  margin-top: 2px;
 }
 
 /* ==============================
-   Bullets (Projects & Soft Skills)
+   Project / Experience Titles
 ============================== */
-.resume-preview .resume-bullets {
-  margin: 0 0 6px 24px; /* tab-like indent */
+#afterPreview .project-title {
+  font-weight: bold;
+  margin: 6px 0 2px;
+}
+
+/* ==============================
+   Bullets
+============================== */
+#afterPreview ul.resume-bullets {
+  margin: 2px 0 6px 26px;
   padding: 0;
 }
 
-.resume-preview .resume-bullets li {
-  font-size: 11px;
-  margin-bottom: 3px;
+#afterPreview ul.resume-bullets li {
+  margin-bottom: 4px;
 }
 
 /* ==============================
-   Links (Email, GitHub, LinkedIn)
+   Technical Skills
 ============================== */
-.resume-preview a {
-  color: #000;
-  text-decoration: underline;
+#afterPreview .skill-line {
+  margin-bottom: 3px;
+}
+
+#afterPreview strong {
+  font-weight: bold;
+}
+
+
+
+/* ======================================
+   UNIVERSAL SCROLLBAR FIX (NO ARROWS)
+====================================== */
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,0.4) transparent;
+}
+
+/* Chrome / Edge / Safari */
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+/* scrollbar track */
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* scrollbar thumb */
+*::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,0.4);
+  border-radius: 10px;
+}
+
+/* 🚫 HIDE SCROLLBAR ARROWS COMPLETELY */
+*::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
 }
