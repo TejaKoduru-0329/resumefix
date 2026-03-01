@@ -422,6 +422,7 @@ body {
     border-radius: 10px;
     box-shadow: 5px 5px 15px #c1c8d3, -5px -5px 15px #fff;
     padding: 12px;
+    height: auto;
   }
 
   .custom-menu .nav-link {
@@ -434,6 +435,13 @@ body {
     background: linear-gradient(-45deg, #035afa, #194782da);
     border-radius: 4px;
   }
+  .action-btn {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
 }
 
 .collapsing {
@@ -446,3 +454,4 @@ body {
     padding: 3px;
     border-radius: 5px;
 }
+
