@@ -77,39 +77,65 @@ body {
     margin-right: 0;
 }
 
+.card-box h1 {
+  font-size: 2rem;
+  font-weight: 500;
+}
 .subtitle {
   color: #555;
   margin-bottom: 24px;
 }
 
+.subtitle span{
+  background: linear-gradient(-45deg, #D000F7, #24BAE3);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
 /* ====== TEMPLATE GRID ====== */
 .template-grid {
   background: #eaecee;
-  box-shadow: 5px 5px 15px #c1c8d3, -5px -5px 15px #fff;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 24px;
-  row-gap: ;
+  row-gap: 24px;
+  border-radius: 14px;
 }
 
 /* ====== TEMPLATE CARD ====== */
+.template-grid {
+  align-items: stretch;
+}
 .template-card {
+  position: relative;
   background: #eaecee;
+  border-radius: 10px;
+  box-shadow: 5px 5px 15px #c1c8d3, -5px -5px 15px #fff;
+  padding: 14px;
+  transition: transform 0.2s ease;
   
 }
 
 .template-card.selected {
-  border: 2px solid #000;
+  box-shadow:
+    0 0 10px rgba(228, 4, 249, 0.7), 
+    0 0 18px rgba(29, 191, 236, 0.5), 
+    5px 5px 15px #c1c8d3,               
+    -5px -5px 15px #fff;
+  transform: scale(1.01);
 }
 
 /* ====== RESUME PREVIEW ====== */
 .resume-preview {
-  height: 520px;
+  height: 600px;
   background: #eaecee;
+  border-radius: 10px;
+  box-shadow: inset 1px 1px 4px rgba(0, 0, 0, 0.15);
   padding: 12px;
   overflow-y: auto;
   font-size: 13px;
+  /* border: #035afa solid 2px; */
 }
+
 
 /* ====== TEMPLATE STYLES ====== */
 .classic-style h2,
@@ -141,12 +167,45 @@ body {
 /* Buttons */
 .use-template-btn {
   margin-top: 12px;
+  align-items: center;
+  border: none;
+  background: #eaecee;
+  box-shadow: 5px 5px 15px #c1c8d3, -5px -5px 15px #fff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: linear-gradient(-45deg, #D000F7, #24BAE3);
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 500;
 }
 
 .download-btn {
-  margin-top: 30px;
-  padding: 10px 20px;
-  font-size: 15px;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 8px;
+  background: #eaecee;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  box-shadow: 
+    5px 5px 15px #c1c8d3,
+    -5px -5px 15px #fff;
+}
+
+.download-btn:hover {
+  box-shadow:
+    -3px -3px 12px rgba(208,0,247,0.5),
+    3px 3px 12px rgba(36,186,227,0.5),
+    5px 5px 15px #c1c8d3,
+    -5px -5px 15px #fff;
+}
+
+.download-btn:active {
+  box-shadow:
+    inset 3px 3px 6px #c1c8d3,
+    inset -3px -3px 6px #fff;
+
+  transform: scale(0.97);
 }
 
 /* ====== MOBILE ====== */

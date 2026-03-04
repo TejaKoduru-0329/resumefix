@@ -50,44 +50,51 @@
 
             <h1>Select Resume Template</h1>
             <p class="subtitle">
-                Preview your AI-enhanced resume in different professional styles
+                Preview your <span>AI</span>-enhanced resume in different professional styles
             </p>
 
             <!-- TEMPLATE GRID -->
             <div class="template-grid">
-
+            
                 <!-- Classic -->
                 <div class="template-card" data-template="classic">
-                <div class="resume-preview classic-style font-times">
-                    {{ optimized_text|safe }}
-                </div>
-                <button class="use-template-btn">Use Classic</button>
+                    <div class="card-inner">
+                        <div class="resume-preview classic-style font-times">
+                        {{ optimized_text|safe }}
+                        </div>
+                        <button class="use-template-btn">Use Classic</button>
+                    </div>  
                 </div>
 
                 <!-- Modern -->
                 <div class="template-card" data-template="modern">
-                <div class="resume-preview modern-style font-inter">
-                    {{ optimized_text|safe }}
-                </div>
-                <button class="use-template-btn">Use Modern</button>
+                    <div class="card-inner">
+                        <div class="resume-preview modern-style font-inter">
+                            {{ optimized_text|safe }}
+                        </div>
+                        <button class="use-template-btn">Use Modern</button>
+                    </div>
                 </div>
 
                 <!-- Compact -->
                 <div class="template-card" data-template="compact">
-                <div class="resume-preview compact-style font-roboto">
-                    {{ optimized_text|safe }}
-                </div>
-                <button class="use-template-btn">Use Compact</button>
+                    <div class="card-inner">
+                        <div class="resume-preview compact-style font-roboto">
+                            {{ optimized_text|safe }}
+                        </div>
+                        <button class="use-template-btn">Use Compact</button>
+                    </div>
                 </div>
 
                 <!-- Minimal -->
                 <div class="template-card" data-template="minimal">
-                <div class="resume-preview minimal-style font-inter">
-                    {{ optimized_text|safe }}
+                    <div class="card-inner">
+                        <div class="resume-preview minimal-style font-inter">
+                            {{ optimized_text|safe }}
+                        </div>
+                        <button class="use-template-btn">Use Minimal</button>
+                    </div>
                 </div>
-                <button class="use-template-btn">Use Minimal</button>
-                </div>
-
             </div>
 
             <button id="templateDownloadBtn"
