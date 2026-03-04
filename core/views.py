@@ -273,7 +273,8 @@ def fix_resume_api(request):
     # 🔥 CACHE CHECK (Gemini only once)
     existing_analysis = ResumeAnalysis.objects.filter(
         user=request.user,
-        before_text=raw_text,
+        # before_text=raw_text,
+        resume_file__icontains=resume_file.name,
         job_description=job_desc
     ).last()
 
@@ -295,6 +296,8 @@ def fix_resume_api(request):
             before_text=raw_text,
             optimized_content=optimized_content
         )
+
+    request.session["analysis_id"] = analysis.id
 
     return JsonResponse({
         "success": True,
@@ -333,15 +336,17 @@ from .utils import render_resume_html
 import json
 
 def resume_preview(request):
+
     template = request.GET.get("template", "classic")
 
-    # temporary dummy data
-    data = {
-        "education": "B.Tech Mechanical Engineering",
-        "skills": ["Python", "Django", "HTML", "CSS"]
-    }
+    analysis_id = request.session.get("analysis_id")
 
-    html = render_resume_html(data, template)
+    analysis = ResumeAnalysis.objects.get(id=analysis_id)
+
+    optimized_text = analysis.optimized_resume
+
+    html = render_resume_html(optimized_text, template)
+
     return HttpResponse(html)
 
 
@@ -350,8 +355,17 @@ def select_template(request):
     request.session["selected_template"] = body["template"]
     return HttpResponse("OK")
 
+# def template_preview_page(request):
+#     analysis = ResumeAnalysis.objects.filter(user=request.user).last()
+#     return render(request, "core/template_preview.html", {
+#         "analysis_id": analysis.id if analysis else None
+#     })
+
 def template_preview_page(request):
-    analysis = ResumeAnalysis.objects.filter(user=request.user).last()
+    analysis_id = request.session.get("analysis_id")
+    analysis = ResumeAnalysis.objects.get(id=analysis_id)
+
     return render(request, "core/template_preview.html", {
-        "analysis_id": analysis.id if analysis else None
+        "optimized_text": analysis.optimized_resume,
+        "analysis_id": analysis_id
     })

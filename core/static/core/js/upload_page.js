@@ -308,6 +308,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const MIN_LOADER_TIME = 1500; // Minimum time to show loader (ms)
 
+  let isSubmitting = false;
+
   /* ==========================
      HELPER FUNCTIONS
   ========================== */
@@ -375,10 +377,17 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
     hideError();
 
+    if (isSubmitting) return;
+
     if (!fileInput.files.length || !jdTextarea.value.trim()) {
       showError("Please provide both a resume and a job description");
       return;
     }
+
+    const fixBtn = form.querySelector("button[type='submit']");
+    fixBtn.disabled = true;
+    fixBtn.innerText = "Processing...";
+    isSubmitting = true
 
     resultsSection.style.display = "none";
 
@@ -430,8 +439,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!data.success) {
           showError(data.message || "AI failed. Please try again.");
+          fixBtn.disabled = false;
+          fixBtn.innerText = "⚡ Fix My Resume";
+          isSubmitting = false;
           return;
         }
+
+        // COMPLETE PROGRESS
+        fill.style.width = "100%";
+        aiStatusText.innerText = "Resume optimized!";
 
         /* ==========================
           SAFE RENDER
@@ -468,6 +484,10 @@ document.addEventListener("DOMContentLoaded", () => {
         fill.style.width = "0%";
         progressTimers.forEach(t => clearTimeout(t));
         showError("Server error. Please try again later.");
+
+        fixBtn.diabled = false;
+        fixBtn.innerText = "⚡ Fix My Resume";
+        isSubmitting = false;
       }, remaining > 0 ? remaining : 0);
       
       console.error(err);

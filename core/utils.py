@@ -6,8 +6,8 @@ from pyparsing import line
 from reportlab.platypus import ListItem, SimpleDocTemplate, Paragraph
 from reportlab.lib.styles import getSampleStyleSheet
 from django.conf import settings
-# from google import genai
-import google.generativeai as genai
+from google import genai
+# import google.generativeai as genai
 
 import re
 from reportlab.platypus import (
@@ -20,9 +20,9 @@ from reportlab.lib.pagesizes import A4
 from .template_config import RESUME_TEMPLATES
 
 # Configure Gemini ONCE
-# client = genai.Client(api_key=settings.GEMINI_API_KEY)
-genai.configure(api_key=settings.GEMINI_API_KEY)
-model = genai.GenerativeModel("gemini-1.5-flash")
+client = genai.Client(api_key=settings.GEMINI_API_KEY)
+# genai.configure(api_key=settings.GEMINI_API_KEY)
+# model = genai.GenerativeModel("gemini-1.5-flash")
 
 
 # 1. TEXT EXTRACTION
