@@ -749,6 +749,9 @@ small {
 
 .download-cover-btn {
   border: none;
+  display: block;
+  margin: 16px auto 0;
+  text-align: center;
   padding: 10px 22px;
   border-radius: 8px;
   background: #eaecee;

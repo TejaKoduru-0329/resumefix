@@ -213,7 +213,7 @@ body {
 }
 
 /* ====== MOBILE ====== */
-@media (max-width: 1024px) {
+@media (max-width: 991px) {
   .template-grid {
     grid-template-columns: 1fr;
   }
@@ -221,14 +221,9 @@ body {
   .resume-preview {
     height: 520px;
   }
+
 }
 
-@media (max-width: 576px) {
-    .card-box {
-        padding: 20px;
-        margin: 20px 12px;
-    }
-}
 
 /* Toggler */
 @media (max-width: 991px) {

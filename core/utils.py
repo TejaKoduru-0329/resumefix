@@ -41,7 +41,7 @@ def get_ai_optimized_resume(resume_text, job_description):
 STRICT RULES:
 - Plain text only. No HTML, markdown, or emojis.
 - Line 1: Candidate NAME only
-- Line 2: All contact details (phone, email, DOB, nationality etc.) separated by " | " on ONE single line
+- Line 2: All contact details separated by " | " on ONE single line. Include ONLY details that are explicitly present in the original resume. Do NOT add "Not Available", "N/A", or any placeholder for missing fields. If DOB is not in resume, skip it entirely.
 - Use **HEADING** format ONLY for section headings, NOT for job titles or project names
 - Use • for ALL bullets. Never use - or numbers as bullets.
 - No blank lines between sections
