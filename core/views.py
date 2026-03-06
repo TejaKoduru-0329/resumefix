@@ -5,13 +5,71 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.models import User
 import os
+import re
+import json
+import time
 from .models import ResumeAnalysis
+from .utils import extract_text_from_pdf, get_ai_optimized_resume, generate_ats_pdf, extract_text_from_docx, get_cover_letter, render_resume_html, generate_cover_letter_pdf
 
-from .utils import extract_text_from_pdf, get_ai_optimized_resume, generate_ats_pdf, extract_text_from_docx
+
+# ── ATS SCORE CALCULATOR ──
+def calculate_ats_score(before_text, after_text, job_desc):
+    stop_words = {
+        'that', 'this', 'with', 'from', 'will', 'have', 'been', 'they',
+        'your', 'also', 'more', 'must', 'work', 'able', 'about', 'after',
+        'their', 'when', 'which', 'would', 'should', 'could', 'other',
+        'these', 'those', 'such', 'into', 'over', 'then', 'than', 'very',
+        'what', 'some', 'team', 'role', 'good', 'well', 'each', 'both',
+        'make', 'take', 'come', 'know', 'like', 'time', 'just', 'need',
+        'here', 'even', 'back', 'only', 'best', 'many', 'much', 'high',
+        'them', 'were', 'said', 'same', 'want', 'look', 'right', 'next',
+        'bake', 'abap', 'amdp', 'assemble', 'approximately', 'assets',
+        'across', 'accelerate', 'anticipate', 'accenture'
+    }
+
+    def extract_keywords(text):
+        words = set(re.findall(r'\b[a-zA-Z]{5,}\b', text.lower()))
+        extended_stops = stop_words | {
+            'basic', 'below', 'broad', 'basis', 'cases', 'carry', 'being',
+            'shall', 'while', 'since', 'where', 'there', 'under', 'using',
+            'given', 'place', 'point', 'range', 'level', 'local', 'large',
+            'small', 'short', 'check', 'might', 'light', 'along', 'every',
+            'never', 'still', 'again', 'often', 'early', 'least', 'among',
+            'above', 'below', 'between', 'through', 'during', 'before',
+            'having', 'making', 'taking', 'giving', 'coming', 'going',
+            'working', 'looking', 'getting', 'including', 'following',
+            'carried', 'approximately', 'assemble', 'anticipate', 'accelerate',
+            # extra common words
+            'ability', 'aptitude', 'citizen', 'change', 'analyze', 'analysis',
+            'businesses', 'capability', 'challenging', 'clients', 'client',
+            'deliver', 'delivery', 'apply', 'agility', 'faster', 'build',
+            'design', 'designs', 'associate', 'application', 'applications'
+        }
+        return words - extended_stops
+
+    jd_keywords  = extract_keywords(job_desc)
+    before_words = extract_keywords(before_text)
+    after_words  = extract_keywords(after_text)
+
+    matched_before = jd_keywords & before_words
+    matched_after  = jd_keywords & after_words
+    missing        = jd_keywords - after_words
+    added          = matched_after - matched_before
+
+    before_score = round((len(matched_before) / len(jd_keywords)) * 100) if jd_keywords else 0
+    after_score  = round((len(matched_after)  / len(jd_keywords)) * 100) if jd_keywords else 0
+
+    return {
+        "before_score":          min(before_score, 100),
+        "after_score":           min(after_score, 100),
+        "matched_keywords":      sorted(list(matched_after))[:15],
+        "missing_keywords":      sorted(list(missing))[:10],
+        "added_keywords":        sorted(list(added))[:10],
+        "keyword_match_percent": min(after_score, 100)
+    }
 
 
-# lANDING + HOME PAGES
-
+# LANDING + HOME PAGES
 def home(request):
     return render(request, 'core/index.html')
 
@@ -22,7 +80,6 @@ def main_home(request):
 
 
 # AUTHENTICATION VIEWS
-
 def login_view(request):
     if request.method == "POST":
         username = request.POST.get("username")
@@ -40,12 +97,12 @@ def login_view(request):
 
 def signup_view(request):
     if request.method == "POST":
-        firstname = request.POST.get("firstname")
-        lastname = request.POST.get("lastname")
-        username = request.POST.get("username")
-        email = request.POST.get("email")
-        password1 = request.POST.get("password1")
-        password2 = request.POST.get("password2")
+        firstname  = request.POST.get("firstname")
+        lastname   = request.POST.get("lastname")
+        username   = request.POST.get("username")
+        email      = request.POST.get("email")
+        password1  = request.POST.get("password1")
+        password2  = request.POST.get("password2")
 
         if User.objects.filter(username=username).exists():
             messages.error(request, "Username already taken.")
@@ -65,7 +122,7 @@ def signup_view(request):
             password=password1
         )
         user.first_name = firstname
-        user.last_name = lastname
+        user.last_name  = lastname
         user.save()
 
         messages.success(request, "Account created successfully. Please login.")
@@ -80,180 +137,25 @@ def logout_view(request):
     return redirect("login")
 
 
-
-# # UPLOAD + PARSE RESUME
-
-# @login_required(login_url='login')
-# def upload_view(request):
-
-#     if request.method == "POST":
-#         resume_file = request.FILES.get("resume")
-#         job_desc = request.POST.get("job_description", "")
-
-#         file_name = resume_file.name.lower()
-
-#         if file_name.endswith(".pdf"):
-#             raw_text = extract_text_from_pdf(resume_file)
-#         elif file_name.endswith(".docx"):
-#             raw_text = extract_text_from_docx(resume_file)
-#         else:
-#             return JsonResponse({
-#                 "success": False,
-#                 "error": "Unsupported file format. Please upload PDF or DOCX."
-#             })
-
-        
-#         # Check if same resume + JD already processed
-#         existing_analysis = ResumeAnalysis.objects.filter(
-#             user=request.user,
-#             before_text=raw_text,
-#             job_description=job_desc
-#         ).last()
-
-#         if existing_analysis:
-#             # Reuse old AI result (NO Gemini call)
-#             optimized_content = existing_analysis.optimized_content
-#             analysis = existing_analysis
-#         else:
-#             # Gemini call with SAFE error handling
-#             try:
-#                 optimized_content = get_ai_optimized_resume(raw_text, job_desc)
-#             except Exception:
-#                 return JsonResponse({
-#                     "success": False,
-#                     "messasge": "AI usage limit reached. Please wait a minute and try again."
-#                 }, status=429)
-
-#             analysis = ResumeAnalysis.objects.create(
-#                 user=request.user,
-#                 resume_file=resume_file,
-#                 job_description=job_desc,
-#                 before_text=raw_text,
-#                 optimized_content=optimized_content
-#             )
-
-#         # Generate PDF
-#         pdf_filename = f"optimized_{analysis.id}.pdf"
-#         output_path = os.path.join('media', 'resumes', pdf_filename)
-#         generate_ats_pdf(optimized_content, output_path)
-
-#         return render(request, "core/upload_page.html", {
-#             "optimized_text": optimized_content,
-#             "analysis_id": analysis.id
-#         })
-
-#     # GET request (page reload / back arrow)
-#     last_analysis = ResumeAnalysis.objects.filter(user=request.user).last()
-
-#     return render(request, "core/upload_page.html", {
-#         "optimized_text": last_analysis.optimized_content if last_analysis else "",
-#         "analysis_id": last_analysis.id if last_analysis else None
-#     })
-    
-
-# @login_required(login_url='login')
-# def fix_resume_api(request):
-#     if request.method != "POST":
-#         return JsonResponse({"success": False, "error": "Invalid request method"})
-
-#     resume_file = request.FILES.get("resume")
-#     job_desc = request.POST.get("job_description", "")
-
-#     if not resume_file or not job_desc:
-#         return JsonResponse({"success": False, "error": "Missing resume or job description"})
-
-#     try:
-#         file_name = resume_file.name.lower()
-
-#         if file_name.endswith(".pdf"):
-#             raw_text = extract_text_from_pdf(resume_file)
-#         elif file_name.endswith(".docx"):
-#             raw_text = extract_text_from_docx(resume_file)
-#         else:
-#             return JsonResponse({
-#                 "success": False,
-#                 "error": "Only PDF or DOCX files are supported"
-#             })
-
-#         optimized_content = get_ai_optimized_resume(raw_text, job_desc)
-
-#         analysis = ResumeAnalysis.objects.create(
-#             user=request.user,
-#             resume_file=resume_file,
-#             job_description=job_desc,
-#             before_text=raw_text,
-#             optimized_content=optimized_content
-#         )
-
-#         return JsonResponse({
-#             "success": True,
-#             "before_text": raw_text,
-#             "optimized_content": optimized_content,
-#             "analysis_id": analysis.id
-#         })
-
-#     except Exception as e:
-#         return JsonResponse({"success": False, "error": str(e)})
-
-
-# @login_required(login_url='login')
-# def download_resume(request, analysis_id):
-#     analysis = get_object_or_404(ResumeAnalysis, id=analysis_id)
-
-#     pdf_filename = f"resume_{analysis.id}.pdf"
-#     pdf_path = os.path.join("media", "generated", pdf_filename)
-
-#     os.makedirs(os.path.dirname(pdf_path), exist_ok=True)
-
-    
-#     # NEW: get selected template OR fallback to default
-#     # template = request.session.get("selected_template", "classic")
-
-#     # Generate ATS-safe PDF
-#     generate_ats_pdf(analysis.optimized_content, pdf_path)
-
-#     with open(pdf_path, "rb") as pdf:
-#         response = HttpResponse(pdf.read(), content_type="application/pdf")
-#         response["Content-Disposition"] = f'attachment; filename="{pdf_filename}"'
-#         request.session.pop("selected_template", None)
-#         return response
-
-
-
-
-
-
-
-
-
-
-
-
-### New upload + parse view with better error handling and caching of results
-
 # UPLOAD PAGE (HTML ONLY)
-
 @login_required(login_url='login')
 def upload_view(request):
-    # Load last analysis for preview (back arrow / refresh safe)
     last_analysis = ResumeAnalysis.objects.filter(user=request.user).last()
-
     return render(request, "core/upload_page.html", {
-        "before_text": last_analysis.before_text if last_analysis else "",
-        "optimized_text": last_analysis.optimized_content if last_analysis else "",
-        "analysis_id": last_analysis.id if last_analysis else None
+        "before_text":    last_analysis.before_text        if last_analysis else "",
+        "optimized_text": last_analysis.optimized_content  if last_analysis else "",
+        "analysis_id":    last_analysis.id                 if last_analysis else None
     })
 
 
 # FIX RESUME API (AI ONLY)
-
 @login_required(login_url='login')
 def fix_resume_api(request):
     if request.method != "POST":
         return JsonResponse({"success": False, "message": "Invalid request"})
 
     resume_file = request.FILES.get("resume")
-    job_desc = request.POST.get("job_description", "")
+    job_desc    = request.POST.get("job_description", "")
 
     if not resume_file:
         return JsonResponse({"success": False, "message": "Resume file missing"})
@@ -270,40 +172,48 @@ def fix_resume_api(request):
             "message": "Only PDF or DOCX files are supported"
         })
 
-    # 🔥 CACHE CHECK (Gemini only once)
-    existing_analysis = ResumeAnalysis.objects.filter(
-        user=request.user,
-        # before_text=raw_text,
-        resume_file__icontains=resume_file.name,
-        job_description=job_desc
-    ).last()
+    # ── GROQ API CALL ──
+    optimized_content = None
 
-    if existing_analysis:
-        analysis = existing_analysis
-    else:
+    try:
+        start = time.time()
+        optimized_content = get_ai_optimized_resume(raw_text, job_desc)
+        print("AI OUTPUT FIRST 500 CHARS:", optimized_content[:500])
+        print(f"GROQ TIME: {time.time() - start:.2f}s")
+    except Exception as e:
+        print("GROQ ERROR:", str(e))
+        time.sleep(5)
         try:
             optimized_content = get_ai_optimized_resume(raw_text, job_desc)
-        except Exception:
-            return JsonResponse({
-                "success": False,
-                "message": "AI usage limit reached. Please wait a minute and try again."
-            }, status=429)
+            print("AI OUTPUT FIRST 500 CHARS:", optimized_content[:500])
+        except Exception as e2:
+            print("GROQ RETRY FAILED:", str(e2))
 
-        analysis = ResumeAnalysis.objects.create(
-            user=request.user,
-            resume_file=resume_file,
-            job_description=job_desc,
-            before_text=raw_text,
-            optimized_content=optimized_content
-        )
+    if not optimized_content:
+        return JsonResponse({
+            "success": False,
+            "message": "AI usage limit reached. Please wait a minute and try again."
+        }, status=429)
+
+    analysis = ResumeAnalysis.objects.create(
+        user=request.user,
+        resume_file=resume_file,
+        job_description=job_desc,
+        before_text=raw_text,
+        optimized_content=optimized_content
+    )
 
     request.session["analysis_id"] = analysis.id
 
+    # ── ATS SCORE ──
+    ats_data = calculate_ats_score(raw_text, optimized_content, job_desc)
+
     return JsonResponse({
-        "success": True,
-        "before_text": analysis.before_text,
+        "success":        True,
+        "before_text":    analysis.before_text,
         "optimized_text": analysis.optimized_content,
-        "analysis_id": analysis.id
+        "analysis_id":    analysis.id,
+        "ats_score":      ats_data
     })
 
 
@@ -312,16 +222,12 @@ def download_resume(request, analysis_id):
     analysis = get_object_or_404(ResumeAnalysis, id=analysis_id)
 
     pdf_filename = f"resume_{analysis.id}.pdf"
-    pdf_path = os.path.join("media", "generated", pdf_filename)
+    pdf_path     = os.path.join("media", "generated", pdf_filename)
     os.makedirs(os.path.dirname(pdf_path), exist_ok=True)
 
     template = request.session.get("selected_template", "classic")
 
-    generate_ats_pdf(
-        analysis.optimized_content,
-        pdf_path,
-        template
-    )
+    generate_ats_pdf(analysis.optimized_content, pdf_path, template)
 
     request.session.pop("selected_template", None)
 
@@ -329,24 +235,13 @@ def download_resume(request, analysis_id):
         response = HttpResponse(pdf.read(), content_type="application/pdf")
         response["Content-Disposition"] = f'attachment; filename="{pdf_filename}"'
         return response
-    
 
-from django.http import HttpResponse
-from .utils import render_resume_html
-import json
 
 def resume_preview(request):
-
-    template = request.GET.get("template", "classic")
-
+    template    = request.GET.get("template", "classic")
     analysis_id = request.session.get("analysis_id")
-
-    analysis = ResumeAnalysis.objects.get(id=analysis_id)
-
-    optimized_text = analysis.optimized_resume
-
-    html = render_resume_html(optimized_text, template)
-
+    analysis    = ResumeAnalysis.objects.get(id=analysis_id)
+    html        = render_resume_html(analysis.optimized_content, template)
     return HttpResponse(html)
 
 
@@ -355,17 +250,58 @@ def select_template(request):
     request.session["selected_template"] = body["template"]
     return HttpResponse("OK")
 
-# def template_preview_page(request):
-#     analysis = ResumeAnalysis.objects.filter(user=request.user).last()
-#     return render(request, "core/template_preview.html", {
-#         "analysis_id": analysis.id if analysis else None
-#     })
 
 def template_preview_page(request):
     analysis_id = request.session.get("analysis_id")
-    analysis = ResumeAnalysis.objects.get(id=analysis_id)
+    analysis    = ResumeAnalysis.objects.get(id=analysis_id)
 
     return render(request, "core/template_preview.html", {
-        "optimized_text": analysis.optimized_resume,
-        "analysis_id": analysis_id
+        "classic_html": render_resume_html(analysis.optimized_content, "classic"),
+        "modern_html":  render_resume_html(analysis.optimized_content, "modern"),
+        "compact_html": render_resume_html(analysis.optimized_content, "compact"),
+        "minimal_html": render_resume_html(analysis.optimized_content, "minimal"),
+        "analysis_id":  analysis_id
     })
+
+
+@login_required(login_url='login')
+def generate_cover_letter_api(request):
+    if request.method != "POST":
+        return JsonResponse({"success": False, "message": "Invalid request"})
+
+    analysis_id = request.session.get("analysis_id")
+    if not analysis_id:
+        return JsonResponse({"success": False, "message": "No resume found"})
+
+    analysis = ResumeAnalysis.objects.get(id=analysis_id)
+    
+    try:
+        cover_letter = get_cover_letter(analysis.optimized_content, analysis.job_description)
+    except Exception as e:
+        print("COVER LETTER ERROR:", str(e))
+        return JsonResponse({"success": False, "message": "Failed to generate cover letter"})
+
+    return JsonResponse({
+        "success": True,
+        "cover_letter": cover_letter
+    })
+
+
+@login_required(login_url='login')  
+def download_cover_letter(request):
+    analysis_id = request.session.get("analysis_id")
+    analysis = ResumeAnalysis.objects.get(id=analysis_id)
+    
+    cover_letter = request.POST.get("cover_letter", "")
+    
+    pdf_filename = f"cover_letter_{analysis.id}.pdf"
+    pdf_path = os.path.join("media", "generated", pdf_filename)
+    os.makedirs(os.path.dirname(pdf_path), exist_ok=True)
+    
+    from .utils import generate_cover_letter_pdf
+    generate_cover_letter_pdf(cover_letter, pdf_path)
+    
+    with open(pdf_path, "rb") as pdf:
+        response = HttpResponse(pdf.read(), content_type="application/pdf")
+        response["Content-Disposition"] = f'attachment; filename="{pdf_filename}"'
+        return response

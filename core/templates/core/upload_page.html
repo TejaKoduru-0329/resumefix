@@ -159,6 +159,7 @@
 
             </div>
 
+            <div id="atsScoreSection" style="display:none;"></div>
             <!-- Action Buttons -->
             <div class="downoald-section text-center mt-5">
                 <a href="" id="downloadBtn" class="download-btn" data-analysis-id="{{ analysis_id }}" target="_blank" style="text-decoration: none; display: none;">
@@ -173,9 +174,20 @@
             </div>
 
             <div class="text-center mt-3">
-                <button class="cv-btn">
+                <button class="cv-btn" id="generateCoverLetterBtn">
                     ✉ Generate Cover Letter
                 </button>
+            </div>
+
+            <!-- Cover Letter Section -->
+            <div id="coverLetterSection" style="display:none; margin-top:24px;">
+                <div class="cover-letter-box">
+                    <h5 class="cover-letter-title">Cover Letter</h5>
+                    <div id="coverLetterContent" class="cover-letter-content"></div>
+                    <button id="downloadCoverLetterBtn" class="download-cover-btn">
+                    ⬇ Download Cover Letter
+                    </button>
+                </div>
             </div>
 
         </div>  

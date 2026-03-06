@@ -62,14 +62,6 @@ body {
     box-shadow: 5px 5px 15px #c1c8d3, -5px -5px 15px #fff;
 }
 
-/* .card-box {
-    margin: 30px auto;
-    padding: 40px;
-    border-radius: 10px;
-    box-shadow: 5px 5px 15px #c1c8d3, -5px -5px 15px #fff;
-    overflow: hidden; 
-} */
-
 .card-box {
     margin: 30px auto;
     padding: 40px;
@@ -273,7 +265,14 @@ small {
     .preview-inner {
         height: 700px;
     }
-  
+    
+}
+
+@media (max-width: 540px) {
+    .container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
 }
 
 .download-btn {
@@ -447,7 +446,7 @@ small {
 ============================== */
 #afterPreview {
   font-family: Helvetica, Arial, sans-serif;
-  font-size: 15px;
+  font-size: 11px;        /* 15px → 11px */
   line-height: 1.35;
   color: #000;
 }
@@ -456,16 +455,23 @@ small {
    Name
 ============================== */
 #afterPreview .resume-name {
-  font-size: 19px;
+  font-size: 15px;        /* 19px → 15px */
   font-weight: bold;
   margin-bottom: 6px;
+}
+
+#afterPreview .resume-contact {
+    font-size: 10px;
+    color: #555;
+    margin-bottom: 10px;
+    line-height: 1.5;
 }
 
 /* ==============================
    Section Headings
 ============================== */
 #afterPreview .resume-heading {
-  font-size: 15px;
+  font-size: 11px;        /* 15px → 11px */
   font-weight: bold;
   margin-top: 10px;
   margin-bottom: 2px;
@@ -482,6 +488,7 @@ small {
 ============================== */
 #afterPreview p {
   margin: 0 0 4px 0;
+  font-size: 11px;        /* add this */
 }
 
 /* ==============================
@@ -493,10 +500,12 @@ small {
 
 #afterPreview .edu-college {
   font-weight: bold;
+  font-size: 11px; 
 }
 
 #afterPreview .edu-meta {
   margin-top: 2px;
+  font-size: 11px; 
 }
 
 /* ==============================
@@ -505,6 +514,7 @@ small {
 #afterPreview .project-title {
   font-weight: bold;
   margin: 6px 0 2px;
+  font-size: 11px; 
 }
 
 /* ==============================
@@ -517,6 +527,7 @@ small {
 
 #afterPreview ul.resume-bullets li {
   margin-bottom: 4px;
+  font-size: 11px; 
 }
 
 /* ==============================
@@ -524,6 +535,7 @@ small {
 ============================== */
 #afterPreview .skill-line {
   margin-bottom: 3px;
+  font-size: 11px; 
 }
 
 #afterPreview strong {
@@ -559,9 +571,197 @@ small {
   border-radius: 10px;
 }
 
-/* 🚫 HIDE SCROLLBAR ARROWS COMPLETELY */
+/* HIDE SCROLLBAR ARROWS COMPLETELY */
 *::-webkit-scrollbar-button {
   display: none;
   width: 0;
   height: 0;
+}
+
+
+/* ── ATS SCORE SECTION ── */
+.ats-section {
+  background: #eaecee;
+  border-radius: 12px;
+  box-shadow: 5px 5px 15px #c1c8d3, -5px -5px 15px #fff;
+  padding: 24px;
+  margin-top: 24px;
+}
+
+.ats-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #333;
+}
+
+.ats-scores {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.ats-score-card {
+  text-align: center;
+}
+
+.ats-circle {
+  position: relative;
+  width: 90px;
+  height: 90px;
+}
+
+.ats-circle svg {
+  width: 100%;
+  height: 100%;
+}
+
+.ats-circle-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1rem;
+  font-weight: 700;
+  color: #333;
+}
+
+.ats-label {
+  margin-top: 6px;
+  font-size: 0.75rem;
+  color: #666;
+}
+
+.ats-arrow {
+  font-size: 1.5rem;
+  color: #999;
+}
+
+.ats-match-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.ats-match-label {
+  font-size: 0.75rem;
+  color: #555;
+  white-space: nowrap;
+}
+
+.ats-match-bar {
+  flex: 1;
+  height: 8px;
+  background: #d0d5dd;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.ats-match-fill {
+  height: 100%;
+  background: linear-gradient(-45deg, #D000F7, #24BAE3);
+  border-radius: 10px;
+  transition: width 1s ease;
+}
+
+.ats-match-percent {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.ats-keyword-group {
+  margin-bottom: 10px;
+}
+
+.ats-kw-title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 6px;
+}
+
+.ats-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ats-tag {
+  font-size: 0.7rem;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+.ats-matched {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #a5d6a7;
+}
+
+.ats-missing {
+  background: #ffebee;
+  color: #c62828;
+  border: 1px solid #ef9a9a;
+}
+
+.ats-added {
+  background: #e3f2fd;
+  color: #1565c0;
+  border: 1px solid #90caf9;
+}
+
+/* COVER LETTER */
+.cover-letter-box {
+  background: #eaecee;
+  border-radius: 12px;
+  box-shadow: 5px 5px 15px #c1c8d3, -5px -5px 15px #fff;
+  padding: 24px;
+  margin-top: 16px;
+}
+
+.cover-letter-title {
+  background: linear-gradient(-45deg, #D000F7, #24BAE3);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+  margin-bottom: 16px;
+}
+
+.cover-letter-content {
+  font-size: 13px;
+  line-height: 1.8;
+  color: #333;
+  white-space: pre-wrap;
+  background: #eaecee;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: inset 2px 2px 6px #c1c8d3, inset -2px -2px 6px #fff;
+  margin-bottom: 16px;
+}
+
+.download-cover-btn {
+  border: none;
+  padding: 10px 22px;
+  border-radius: 8px;
+  background: #eaecee;
+  background: linear-gradient(-45deg, #D000F7, #24BAE3);
+  cursor: pointer;
+  font-size: 0.9rem;
+  box-shadow: 5px 5px 15px #c1c8d3, -5px -5px 15px #fff;
+  transition: all 0.15s ease;
+  text-align: center;
+  color: #fff;
+}
+
+.download-cover-btn:hover {
+  background-image: linear-gradient(-45deg, #af9cb3, #083f4e);
+  color: #fff;
 }

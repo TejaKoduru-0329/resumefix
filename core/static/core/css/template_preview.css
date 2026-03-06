@@ -77,6 +77,12 @@ body {
     margin-right: 0;
 }
 
+.card-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;  /* ← add చేయి */
+}
+
 .card-box h1 {
   font-size: 2rem;
   font-weight: 500;
@@ -167,7 +173,7 @@ body {
 /* Buttons */
 .use-template-btn {
   margin-top: 12px;
-  align-items: center;
+  text-align: center;
   border: none;
   background: #eaecee;
   box-shadow: 5px 5px 15px #c1c8d3, -5px -5px 15px #fff;
@@ -180,24 +186,22 @@ body {
 }
 
 .download-btn {
+  display: block;
+  margin: 24px auto 0;
   border: none;
   padding: 10px 22px;
   border-radius: 8px;
   background: #eaecee;
   cursor: pointer;
   transition: all 0.15s ease;
-
   box-shadow: 
     5px 5px 15px #c1c8d3,
     -5px -5px 15px #fff;
 }
 
 .download-btn:hover {
-  box-shadow:
-    -3px -3px 12px rgba(208,0,247,0.5),
-    3px 3px 12px rgba(36,186,227,0.5),
-    5px 5px 15px #c1c8d3,
-    -5px -5px 15px #fff;
+  color: #fff;
+  background: linear-gradient(-45deg, #D000F7, #24BAE3);
 }
 
 .download-btn:active {
@@ -209,14 +213,21 @@ body {
 }
 
 /* ====== MOBILE ====== */
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
   .template-grid {
     grid-template-columns: 1fr;
   }
 
   .resume-preview {
-    height: 420px;
+    height: 520px;
   }
+}
+
+@media (max-width: 576px) {
+    .card-box {
+        padding: 20px;
+        margin: 20px 12px;
+    }
 }
 
 /* Toggler */
@@ -246,4 +257,29 @@ body {
 
 .collapsing {
     transition: none;
+}
+
+.resume-preview::-webkit-scrollbar {
+    width: 6px;
+    height: 3px;
+}
+
+.resume-preview::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.resume-preview::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 123, 255, 0.6); 
+    border-radius: 10px;
+}
+
+.resume-preview::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
+}
+
+.resume-preview {
+    scrollbar-width: thin; 
+    scrollbar-color: rgba(111, 0, 255, 0.6) transparent;
 }

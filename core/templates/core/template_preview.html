@@ -47,63 +47,65 @@
     <div class="container mt-5 pt-5">
 
         <div class="card-box">
+            <div class="row">
+                <h1>Select Resume Template</h1>
+                <p class="subtitle">
+                    Preview your <span>AI</span>-enhanced resume in different professional styles
+                </p>
 
-            <h1>Select Resume Template</h1>
-            <p class="subtitle">
-                Preview your <span>AI</span>-enhanced resume in different professional styles
-            </p>
+                <!-- TEMPLATE GRID -->
+                <div class="template-grid">
+                
+                    <!-- Classic -->
+                    <div class="template-card" data-template="classic">
+                        <div class="card-inner">
+                            <div class="resume-preview classic-style font-times">
+                            {{ classic_html|safe }}
+                            </div>
+                            <button class="use-template-btn">Use Classic</button>
+                        </div>  
+                    </div>
 
-            <!-- TEMPLATE GRID -->
-            <div class="template-grid">
-            
-                <!-- Classic -->
-                <div class="template-card" data-template="classic">
-                    <div class="card-inner">
-                        <div class="resume-preview classic-style font-times">
-                        {{ optimized_text|safe }}
+                    <!-- Modern -->
+                    <div class="template-card" data-template="modern">
+                        <div class="card-inner">
+                            <div class="resume-preview modern-style font-inter">
+                                {{ modern_html|safe }}
+                            </div>
+                            <button class="use-template-btn">Use Modern</button>
                         </div>
-                        <button class="use-template-btn">Use Classic</button>
-                    </div>  
-                </div>
+                    </div>
 
-                <!-- Modern -->
-                <div class="template-card" data-template="modern">
-                    <div class="card-inner">
-                        <div class="resume-preview modern-style font-inter">
-                            {{ optimized_text|safe }}
+                    <!-- Compact -->
+                    <div class="template-card" data-template="compact">
+                        <div class="card-inner">
+                            <div class="resume-preview compact-style font-roboto">
+                                {{ compact_html|safe }}
+                            </div>
+                            <button class="use-template-btn">Use Compact</button>
                         </div>
-                        <button class="use-template-btn">Use Modern</button>
+                    </div>
+
+                    <!-- Minimal -->
+                    <div class="template-card" data-template="minimal">
+                        <div class="card-inner">
+                            <div class="resume-preview minimal-style font-inter">
+                                {{ minimal_html|safe }}
+                            </div>
+                            <button class="use-template-btn">Use Minimal</button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Compact -->
-                <div class="template-card" data-template="compact">
-                    <div class="card-inner">
-                        <div class="resume-preview compact-style font-roboto">
-                            {{ optimized_text|safe }}
-                        </div>
-                        <button class="use-template-btn">Use Compact</button>
-                    </div>
-                </div>
-
-                <!-- Minimal -->
-                <div class="template-card" data-template="minimal">
-                    <div class="card-inner">
-                        <div class="resume-preview minimal-style font-inter">
-                            {{ optimized_text|safe }}
-                        </div>
-                        <button class="use-template-btn">Use Minimal</button>
-                    </div>
+                <div class="text-center mt-5">
+                    <button id="templateDownloadBtn"
+                            data-analysis-id="{{ analysis_id }}"
+                            class="download-btn"
+                            style="display:none;">
+                        ⬇ Download Resume
+                    </button>
                 </div>
             </div>
-
-            <button id="templateDownloadBtn"
-                    data-analysis-id="{{ analysis_id }}"
-                    class="download-btn"
-                    style="display:none;">
-                ⬇ Download Resume
-            </button>
-
         </div>
     </div>
 
