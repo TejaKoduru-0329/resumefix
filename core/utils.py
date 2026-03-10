@@ -194,7 +194,7 @@ def generate_ats_pdf(text, output_path, template_key="classic"):
         fontSize=style_cfg.get("name_size", 16),
         textColor=accent_color,
         alignment=header_align,
-        spaceAfter=4,
+        spaceAfter=6,
     )
 
     contact_style = ParagraphStyle(
@@ -203,7 +203,7 @@ def generate_ats_pdf(text, output_path, template_key="classic"):
         fontSize=style_cfg["body_size"] - 0.5,
         textColor=colors.HexColor("#555555"),
         alignment=header_align,
-        spaceBefore=2,
+        spaceBefore=4,
         spaceAfter=4,
     )
 

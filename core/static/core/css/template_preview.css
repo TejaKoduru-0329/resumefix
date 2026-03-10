@@ -26,19 +26,104 @@ body {
     border-radius: 4px;
 }
 
-.logout-btn {
-    border: none; 
-    text-decoration: none;
-    color: black;
-    padding: 8px 20px;
+/* ====== USER DROPDOWN ====== */
+.user-dropdown-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     background: #eaecee;
-    box-shadow: 5px 5px 15px #c1c8d3, -5px -5px 15px #fff;
-    border-radius: 5px; 
+    border: none;
+    border-radius: 20px;
+    padding: 4px 12px 4px 4px;
+    box-shadow: 3px 3px 8px #c1c8d3, -3px -3px 8px #fff;
+    cursor: pointer;
+    transition: all 0.2s;
 }
 
-.logout-btn:hover {
+.user-dropdown-btn:hover {
+    box-shadow: -2px -2px 8px rgba(208,0,247,0.3), 2px 2px 8px rgba(36,186,227,0.3);
+}
+
+.user-dropdown-btn::after { display: none !important; }
+
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #00b4d8, #d000f7);
     color: #fff;
-    background: linear-gradient(-45deg, #D000F7, #24BAE3);
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 1px;
+    flex-shrink: 0;
+}
+
+.user-name {
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: #333;
+}
+
+.dropdown-arrow {
+    font-size: 0.7rem;
+    color: #888;
+    margin-left: 2px;
+}
+
+.user-dropdown-menu {
+    background: #eaecee;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 5px 5px 15px #c1c8d3, -5px -5px 15px #fff;
+    padding: 8px;
+    min-width: 210px;
+    position: absolute !important;
+    right: 0 !important;
+    left: auto !important;
+    top: 100% !important;
+    margin-top: 8px !important;
+}
+
+.dropdown-header-item { padding: 8px 12px; }
+
+.user-full-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #333;
+    margin: 0;
+}
+
+.user-email {
+    font-size: 0.75rem;
+    color: #888;
+    margin: 2px 0 0 0;
+}
+
+.user-dropdown-menu .dropdown-item {
+    border-radius: 8px;
+    font-size: 0.88rem;
+    padding: 8px 12px;
+    color: #333;
+}
+
+.user-dropdown-menu .dropdown-item:hover { background: #dde1e7; }
+
+@media (max-width: 991px) {
+
+    .user-dropdown-btn {
+        padding: 4px;
+        border-radius: 20px;
+    }
+
+    .user-dropdown-menu {
+        position: fixed !important;
+        right: 12px !important;
+        top: 85px !important;
+        left: auto !important;
+    }
 }
 
 .navbar-toggler {

@@ -6,6 +6,7 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('login/', views.login_view, name='login'),
     path('signup/', views.signup_view, name='signup'),
+    path('verify-email/<uidb64>/<token>/', views.verify_email, name='verify_email'),
     path('main_home/', views.main_home, name='main_home'),
     path('logout/', views.logout_view, name='logout'),
     path('upload_page/', views.upload_view, name='upload_page'),
@@ -16,6 +17,8 @@ urlpatterns = [
     path("template-preview/", views.template_preview_page, name="template_preview"),
     path("resume-preview/", views.resume_preview, name="resume_preview"),
     path("select-template/", views.select_template, name="select_template"),
+
+    path('change-password/', views.change_password, name='change_password'),
 
 ]
 

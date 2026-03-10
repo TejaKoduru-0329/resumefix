@@ -10,7 +10,13 @@ import json
 import time
 from .models import ResumeAnalysis
 from .utils import extract_text_from_pdf, get_ai_optimized_resume, generate_ats_pdf, extract_text_from_docx, get_cover_letter, render_resume_html, generate_cover_letter_pdf
+from django.contrib.messages import get_messages
 
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.core.mail import send_mail
+from django.contrib.auth import update_session_auth_hash
 
 # ── ATS SCORE CALCULATOR ──
 def calculate_ats_score(before_text, after_text, job_desc):
@@ -116,6 +122,7 @@ def signup_view(request):
             messages.error(request, "Passwords do not match.")
             return redirect("signup")
 
+        # Create user but inactive until email verified
         user = User.objects.create_user(
             username=username,
             email=email,
@@ -123,15 +130,63 @@ def signup_view(request):
         )
         user.first_name = firstname
         user.last_name  = lastname
+        user.is_active  = False  # inactive until verified
         user.save()
 
-        messages.success(request, "Account created successfully. Please login.")
+        # Generate verification token
+        token = default_token_generator.make_token(user)
+        uid   = urlsafe_base64_encode(force_bytes(user.pk))
+
+        # Verification link
+        verification_link = f"http://127.0.0.1:8000/verify-email/{uid}/{token}/"
+
+        # Send email
+        send_mail(
+            subject="Verify your ResumeFix.ai account",
+            message=f"""Hi {firstname},
+
+Welcome to ResumeFix.ai!
+
+Please click the link below to verify your email address:
+
+{verification_link}
+
+This link will expire after some time.
+
+If you did not create an account, please ignore this email.
+
+Thanks,
+ResumeFix.ai Team""",
+            from_email=None,
+            recipient_list=[email],
+            fail_silently=False,
+        )
+
+        messages.success(request, "Account created! Please check your email to verify your account.")
         return redirect("login")
 
     return render(request, 'core/signup.html')
 
 
+def verify_email(request, uidb64, token):
+    try:
+        uid  = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except Exception:
+        user = None
+
+    if user and default_token_generator.check_token(user, token):
+        user.is_active = True
+        user.save()
+        messages.success(request, "Email verified successfully! You can now login.")
+        return redirect("login")
+    else:
+        messages.error(request, "Verification link is invalid or expired.")
+        return redirect("signup")
+
+
 def logout_view(request):
+    list(get_messages(request)) 
     logout(request)
     messages.success(request, "Logged out successfully.")
     return redirect("login")
@@ -305,3 +360,27 @@ def download_cover_letter(request):
         response = HttpResponse(pdf.read(), content_type="application/pdf")
         response["Content-Disposition"] = f'attachment; filename="{pdf_filename}"'
         return response
+
+
+@login_required(login_url='login')
+def change_password(request):
+    if request.method == "POST":
+        old_password = request.POST.get("old_password")
+        new_password1 = request.POST.get("new_password1")
+        new_password2 = request.POST.get("new_password2")
+
+        if not request.user.check_password(old_password):
+            messages.error(request, "Current password is incorrect.")
+            return redirect("change_password")
+
+        if new_password1 != new_password2:
+            messages.error(request, "New passwords do not match.")
+            return redirect("change_password")
+
+        request.user.set_password(new_password1)
+        request.user.save()
+        update_session_auth_hash(request, request.user)
+        messages.success(request, "Password changed successfully!")
+        return redirect("main_home")
+
+    return render(request, 'core/change_password.html')

@@ -41,8 +41,24 @@
           <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
           <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
         </ul>
-        <div class="d-flex justify-content-end mt-2 gap-2 text-end">
-          <a href="{% url 'logout' %}" class="logout-btn">Log Out</a>
+
+        <div class="d-flex justify-content-end mt-2 gap-2 text-end align-items-center">
+          <div class="dropdown">
+            <button class="user-dropdown-btn dropdown-toggle" data-bs-toggle="dropdown">
+              <div class="user-avatar">{{ request.user.first_name|first|upper }}{{ request.user.last_name|first|upper }}</div>
+              <span class="user-name">{{ request.user.first_name }}</span>
+              <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end user-dropdown-menu">
+              <li class="dropdown-header-item">
+                <p class="user-full-name">{{ request.user.first_name }} {{ request.user.last_name }}</p>
+                <p class="user-email">{{ request.user.email }}</p>
+              </li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="{% url 'change_password' %}">🔑 Change Password</a></li>
+              <li><a class="dropdown-item text-danger" href="{% url 'logout' %}">🚪 Log Out</a></li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>

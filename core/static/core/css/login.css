@@ -87,3 +87,51 @@ span{
     font-weight: 700;
     font-size: 16px;
 }
+
+/* Google login btn */
+.google-login-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 24px;
+    border-radius: 8px;
+    background: #eaecee;
+    box-shadow: 5px 5px 15px #c1c8d3, -5px -5px 15px #fff;
+    color: #333;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: box-shadow 0.2s;
+}
+
+.google-login-btn:hover {
+    box-shadow: -3px -3px 12px rgba(208,0,247,0.5), 3px 3px 12px rgba(36,186,227,0.5);
+    color: #333;
+}
+
+.or-divider {
+    display: flex;
+    align-items: center;
+    margin: 16px 0;
+    color: #888;
+    font-size: 0.85rem;
+}
+
+.or-divider::before,
+.or-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #c1c8d3;
+}
+
+.or-divider::before {
+    margin-right: 10px;
+}
+
+.or-divider::after {
+    margin-left: 10px;
+}
+
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+    display: none;
+}

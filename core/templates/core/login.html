@@ -59,6 +59,17 @@
                         
                     </form>
 
+                    <!-- Google Login -->
+                    <div style="text-align:center; margin-top: 16px;">
+                        <div class="or-divider">
+                            <span>or</span>
+                        </div>
+                        <a href="{% url 'google_login' %}" class="google-login-btn">
+                            <img src="https://developers.google.com/identity/images/g-logo.png" width="20" style="margin-right:8px; background: transparent; mix-blend-mode: multiply;">
+                            Continue with Google
+                        </a>
+                    </div>
+
                     <p class="text-start mt-3">Don’t have an account?
                         <a href="{% url 'signup' %}" target="_blank">Sign up</a>
                     </p>
