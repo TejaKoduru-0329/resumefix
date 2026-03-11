@@ -78,7 +78,7 @@ Built as a **solo project** with real-world monetization, authentication, and AI
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/[your-username]/resumefix.git
+git clone https://github.com/TejaKoduru-0329/resumefix.git
 cd resumefix
 
 # 2. Create virtual environment
@@ -142,6 +142,7 @@ resumefix/
 │   ├── views.py            # Payment views
 │   └── urls.py             # Payment URLs
 ├── resumefix_project/      # Django project settings
+├── screenshots/            # README screenshots  ← ఇది add చేయి
 ├── media/generated/        # Generated PDFs
 ├── .env                    # Environment variables
 └── manage.py
@@ -151,9 +152,15 @@ resumefix/
 
 ## 🗺 Roadmap
 
-- [ ] Deploy to production (Railway / Render)
-- [ ] Razorpay Live mode (after Video KYC)
-- [ ] LinkedIn profile optimizer
+- [x] AI Resume Optimization (Groq AI)
+- [x] ATS Keyword Scoring System
+- [x] Google OAuth + Email Authentication
+- [x] Email Verification
+- [x] Credit-based Payment System (Razorpay)
+- [x] 4 Resume Templates + PDF Generation
+- [x] Cover Letter Generator
+- [ ] Deploy to production
+- [ ] Razorpay Live mode
 - [ ] Resume score history dashboard
 - [ ] Multiple resume versions per user
 
@@ -162,13 +169,19 @@ resumefix/
 ## 👨‍💻 Author
 
 **Koduru Lahari Teja**  
-Full Stack Developer | Python • Django • React  
-📧 [your-email]  
-🔗 [LinkedIn URL]  
-🐙 [GitHub URL]
+Full Stack Developer | Python • Django • JavaScript  
+📧 koduruteja410@gmail.com  
+🔗 [LinkedIn URL](https://www.linkedin.com/in/lahariteja) 
+🐙 [GitHub](https://github.com/TejaKoduru-0329)
+
+### 🛠 Skills
+`Python` `Django` `JavaScript` `HTML5` `CSS3`  
+`SQLite` `REST APIs` `Git` `GitHub`  
+`Google OAuth` `Razorpay` `Groq AI` `Bootstrap`
 
 ---
 
 ## 📄 License
 
-This project is for portfolio and learning purposes.
+This project is open source and available under the [MIT License](LICENSE).  
+Built for portfolio purposes — feel free to explore the code!
