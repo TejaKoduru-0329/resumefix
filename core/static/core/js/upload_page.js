@@ -206,8 +206,9 @@ document.addEventListener("DOMContentLoaded", () => {
           downloadBtn.style.display = "inline-block";
 
           downloadBtn.onclick = function () {
-            window.open(`/download/${data.analysis_id}/`, "_blank");
+              window.location.href = `/download/${data.analysis_id}/`;
           };
+  
         }
 
         fixBtn.disabled = false;

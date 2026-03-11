@@ -159,14 +159,25 @@ body {
     color: #333;
 }
 
+.credit-badge {
+    font-size: 0.78rem;
+    color: #fd0303d7;
+    font-weight: 500;
+    background: #eaecee;
+    border-radius: 8px;
+    padding: 4px 10px;
+    display: inline-block;
+}
+
+
+
 .user-dropdown-menu .dropdown-item:hover { background: #dde1e7; }
 
 @media (max-width: 991px) {
-    .user-name, .dropdown-arrow { display: none; }
 
     .user-dropdown-btn {
         padding: 4px;
-        border-radius: 50%;
+        border-radius: 20px;
     }
 
     .user-dropdown-menu {
