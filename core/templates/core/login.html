@@ -27,6 +27,7 @@
 
                     {% if messages %}
                         {% for message in messages %}
+                            {% if "signed in as" not in message.message %}
                             <div class="alert {% if 'error' in message.tags %}alert-danger{% elif 'success' in message.tags %}alert-success{% else %}alert-info{% endif %} alert-dismissible fade show custom-alert"
                                 role="alert">
 
@@ -37,6 +38,7 @@
                                 </button>
 
                             </div>
+                            {% endif %}
                         {% endfor %}
                     {% endif %}
 
