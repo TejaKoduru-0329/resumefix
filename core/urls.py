@@ -19,6 +19,6 @@ urlpatterns = [
     path("select-template/", views.select_template, name="select_template"),
 
     path('change-password/', views.change_password, name='change_password'),
-
+    path('download-template/<int:analysis_id>/', views.download_from_template, name='download_from_template'),
 ]
 

@@ -1,3 +1,5 @@
+from pydoc import plain
+
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import authenticate, login, logout
@@ -17,6 +19,28 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.core.mail import send_mail
 from django.contrib.auth import update_session_auth_hash
+from payments.models import UserPlan
+
+
+# ── CREDIT HELPERS (DB based) ──
+FREE_LIMIT = 2
+
+def get_or_create_plan(user):
+    plan, _ = UserPlan.objects.get_or_create(user=user)
+    return plan
+
+def get_credits(request):
+    plan = get_or_create_plan(request.user)
+    return plan.resumes_remaining()
+
+def use_credit(request):
+    plan = get_or_create_plan(request.user)
+    plan.use_resume()
+
+def has_credits(request):
+    plan = get_or_create_plan(request.user)
+    return plan.can_generate()
+
 
 # ── ATS SCORE CALCULATOR ──
 def calculate_ats_score(before_text, after_text, job_desc):
@@ -87,6 +111,9 @@ def main_home(request):
 
 # AUTHENTICATION VIEWS
 def login_view(request):
+    
+    list(get_messages(request))
+
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password1")
@@ -184,7 +211,7 @@ def verify_email(request, uidb64, token):
         messages.error(request, "Verification link is invalid or expired.")
         return redirect("signup")
 
-
+@login_required
 def logout_view(request):
     list(get_messages(request)) 
     logout(request)
@@ -196,10 +223,12 @@ def logout_view(request):
 @login_required(login_url='login')
 def upload_view(request):
     last_analysis = ResumeAnalysis.objects.filter(user=request.user).last()
+    plan = get_or_create_plan(request.user) 
     return render(request, "core/upload_page.html", {
         "before_text":    last_analysis.before_text        if last_analysis else "",
         "optimized_text": last_analysis.optimized_content  if last_analysis else "",
-        "analysis_id":    last_analysis.id                 if last_analysis else None
+        "analysis_id":    last_analysis.id                 if last_analysis else None,
+        "credits":        plan.resumes_remaining(),
     })
 
 
@@ -274,17 +303,21 @@ def fix_resume_api(request):
 
 @login_required(login_url='login')
 def download_resume(request, analysis_id):
-    analysis = get_object_or_404(ResumeAnalysis, id=analysis_id)
+    # ── Credit Check ──
+    if not has_credits(request):
+        return redirect('payments:payment_page')
 
+    analysis = get_object_or_404(ResumeAnalysis, id=analysis_id)
     pdf_filename = f"resume_{analysis.id}.pdf"
-    pdf_path     = os.path.join("media", "generated", pdf_filename)
+    pdf_path = os.path.join("media", "generated", pdf_filename)
     os.makedirs(os.path.dirname(pdf_path), exist_ok=True)
 
     template = request.session.get("selected_template", "classic")
-
     generate_ats_pdf(analysis.optimized_content, pdf_path, template)
-
     request.session.pop("selected_template", None)
+
+    # ── Use 1 Credit ──
+    use_credit(request)
 
     with open(pdf_path, "rb") as pdf:
         response = HttpResponse(pdf.read(), content_type="application/pdf")
@@ -318,6 +351,28 @@ def template_preview_page(request):
         "analysis_id":  analysis_id
     })
 
+@login_required(login_url='login')
+def download_from_template(request, analysis_id):
+    # ── Credit Check ──
+    if not has_credits(request):
+        return redirect('payments:payment_page')
+
+    analysis = get_object_or_404(ResumeAnalysis, id=analysis_id)
+    template = request.GET.get('template', 'classic')
+
+    pdf_filename = f"resume_{analysis.id}_{template}.pdf"
+    pdf_path = os.path.join("media", "generated", pdf_filename)
+    os.makedirs(os.path.dirname(pdf_path), exist_ok=True)
+
+    generate_ats_pdf(analysis.optimized_content, pdf_path, template)
+
+    # ── Use 1 Credit ──
+    use_credit(request)
+
+    with open(pdf_path, "rb") as pdf:
+        response = HttpResponse(pdf.read(), content_type="application/pdf")
+        response["Content-Disposition"] = f'attachment; filename="{pdf_filename}"'
+        return response
 
 @login_required(login_url='login')
 def generate_cover_letter_api(request):

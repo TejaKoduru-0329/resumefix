@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     'core',
+    'payments',
     # Google Auth
     'django.contrib.sites',
     'allauth',
