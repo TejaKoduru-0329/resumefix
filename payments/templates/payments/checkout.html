@@ -1,0 +1,289 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buy Credits — ResumeFix.ai</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="{% static 'core/css/bootstrap.min.css' %}">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="{% static 'core/css/all.min.css' %}">
+
+    <!-- Payment Page CSS -->
+    <link rel="stylesheet" href="{% static 'core/css/payment_page.css' %}">
+</head>
+<body>
+
+    <!-- ===== NAVBAR (same as upload_page.html) ===== -->
+    <nav class="navbar navbar-expand-lg fixed-top custom-nav">
+        <div class="container">
+            <div class="d-flex align-items-center">
+                <img src="{% static 'core/images/logo.jpg' %}" class="web-icon me-2">
+                <h3 class="m-0">ResumeFix.ai</h3>
+            </div>
+
+            <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <div class="collapse navbar-collapse custom-menu" id="mainNav">
+                <ul class="navbar-nav mx-auto text-end">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Features</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
+                </ul>
+                <div class="d-flex justify-content-end mt-2 gap-2 text-end align-items-center">
+                    <div class="dropdown">
+                        <button class="user-dropdown-btn dropdown-toggle" data-bs-toggle="dropdown">
+                            <div class="user-avatar">{{ request.user.first_name|first|upper }}{{ request.user.last_name|first|upper }}</div>
+                            <span class="user-name">{{ request.user.first_name }}</span>
+                            <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end user-dropdown-menu">
+                            <li class="dropdown-header-item">
+                                <p class="user-full-name">{{ request.user.first_name }} {{ request.user.last_name }}</p>
+                                <p class="user-email">{{ request.user.email }}</p>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'change_password' %}">🔑 Change Password</a></li>
+                            <li><a class="dropdown-item text-danger" href="{% url 'logout' %}">🚪 Log Out</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="container mt-5 pt-5">
+        <div class="card-box">
+
+            <!-- Credit Status Bar -->
+            <div class="credit-status-bar mb-4">
+                <div class="d-flex align-items-center gap-3 flex-wrap">
+                    <div class="credit-icon-wrap">
+                        <i class="fa-solid fa-file-lines"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-0 fw-bold">Your Resume Credits</h6>
+                        <small class="text-muted">
+                            Free: {{ plan.free_resumes_used }}/{{ plan.FREE_LIMIT }} used &nbsp;|&nbsp;
+                            Paid credits left: {{ plan.total_paid_resumes|add:"-0" }}
+                        </small>
+                    </div>
+                    <div class="ms-auto d-flex gap-2 flex-wrap align-items-center">
+                        <!-- Free Pills -->
+                        {% for i in free_range %}
+                            {% if i < plan.free_resumes_used %}
+                                <div class="credit-pill pill-used" title="Free resume used">✗</div>
+                            {% else %}
+                                <div class="credit-pill pill-free" title="Free resume available">✓</div>
+                            {% endif %}
+                        {% endfor %}
+                        <!-- Paid Pills -->
+                        {% for i in paid_range %}
+                            <div class="credit-pill pill-paid" title="Paid credit">★</div>
+                        {% endfor %}
+                        <small class="credits-remaining-label" id="creditsLabel">
+                            {% with remaining=plan.resumes_remaining %}
+                                {% if remaining == 0 %}
+                                    <span class="text-danger">0 left — Buy below ↓</span>
+                                {% else %}
+                                    <span class="text-success">{{ remaining }} resume{{ remaining|pluralize }} available</span>
+                                {% endif %}
+                            {% endwith %}
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page Header -->
+            <div class="text-center mb-5">
+                <h2 class="page-title">Get More <span class="gradient-text">AI Resumes</span></h2>
+                <p class="text-muted">You've used your {{ plan.FREE_LIMIT }} free resumes. Get more for just ₹49 each — no subscription.</p>
+            </div>
+
+            <!-- Pricing Cards -->
+            <div class="row justify-content-center g-4 mb-5" id="pricingGrid">
+
+                <!-- Plan 1 -->
+                <div class="col-12 col-md-4">
+                    <div class="plan-card" onclick="selectPlan(this, 1, 49)" data-qty="1" data-price="49">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="plan-check" id="chk0">✓</div>
+                            <span class="plan-badge">Single</span>
+                        </div>
+                        <div class="plan-qty">1</div>
+                        <div class="plan-label">Resume Credit</div>
+                        <hr class="plan-divider">
+                        <div class="plan-price">
+                            <span class="plan-symbol">₹</span>
+                            <span class="plan-amount gradient-text">49</span>
+                        </div>
+                        <div class="plan-per text-muted">per resume</div>
+                    </div>
+                </div>
+
+                <!-- Plan 2 — Popular -->
+                <div class="col-12 col-md-4">
+                    <div class="plan-card plan-popular selected" onclick="selectPlan(this, 5, 199)" data-qty="5" data-price="199">
+                        <span class="popular-tag">🔥 Most Popular</span>
+                        <div class="d-flex justify-content-between align-items-center mb-3 mt-2">
+                            <div class="plan-check active" id="chk1">✓</div>
+                            <span class="plan-badge">Bundle</span>
+                        </div>
+                        <div class="plan-qty">5</div>
+                        <div class="plan-label">Resume Credits</div>
+                        <hr class="plan-divider">
+                        <div class="plan-price">
+                            <span class="plan-symbol">₹</span>
+                            <span class="plan-amount gradient-text">199</span>
+                        </div>
+                        <div class="plan-per text-muted">₹39.8 per resume</div>
+                        <span class="savings-tag">✓ Save ₹46</span>
+                    </div>
+                </div>
+
+                <!-- Plan 3 -->
+                <div class="col-12 col-md-4">
+                    <div class="plan-card" onclick="selectPlan(this, 10, 349)" data-qty="10" data-price="349">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="plan-check" id="chk2">✓</div>
+                            <span class="plan-badge">Pro Pack</span>
+                        </div>
+                        <div class="plan-qty">10</div>
+                        <div class="plan-label">Resume Credits</div>
+                        <hr class="plan-divider">
+                        <div class="plan-price">
+                            <span class="plan-symbol">₹</span>
+                            <span class="plan-amount gradient-text">349</span>
+                        </div>
+                        <div class="plan-per text-muted">₹34.9 per resume</div>
+                        <span class="savings-tag">🎉 Save ₹141</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Pay Button -->
+            <div class="text-center">
+                <button class="pay-btn" id="payBtn" onclick="openModal()">
+                    🔒 &nbsp;<span id="payBtnLabel">Pay ₹199 — Get 5 Resume Credits</span>
+                </button>
+                <p class="secure-note mt-2">
+                    <i class="fa-solid fa-shield-halved me-1"></i>
+                    Secured by Razorpay &nbsp;·&nbsp; UPI &nbsp;·&nbsp; Cards &nbsp;·&nbsp; NetBanking
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- ===== PAYMENT MODAL ===== -->
+    <div class="modal-overlay" id="payModal" onclick="handleOverlayClick(event)">
+        <div class="pay-modal">
+
+            <!-- Payment Form View -->
+            <div id="modalForm">
+                <div class="modal-top">
+                    <span class="modal-brand">Resume<span class="gradient-text">Fix.ai</span></span>
+                    <button class="modal-close-btn" onclick="closeModal()">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="modal-body-area">
+
+                    <!-- Amount Display -->
+                    <div class="amount-display">
+                        <div>
+                            <div class="amount-label">You're paying</div>
+                            <div class="amount-qty" id="modalQty">5 Resume Credits</div>
+                        </div>
+                        <div class="amount-value gradient-text" id="modalPrice">₹199</div>
+                    </div>
+
+                    <!-- Payment Methods -->
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <button class="method-btn active" onclick="pickMethod(this)">
+                                <span class="method-icon">📲</span> UPI
+                            </button>
+                        </div>
+                        <div class="col-6">
+                            <button class="method-btn" onclick="pickMethod(this)">
+                                <span class="method-icon">💳</span> Card
+                            </button>
+                        </div>
+                        <div class="col-6">
+                            <button class="method-btn" onclick="pickMethod(this)">
+                                <span class="method-icon">🏦</span> NetBanking
+                            </button>
+                        </div>
+                        <div class="col-6">
+                            <button class="method-btn" onclick="pickMethod(this)">
+                                <span class="method-icon">💰</span> Wallet
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- UPI Input -->
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-muted">UPI ID</label>
+                        <input type="text" class="neu-input" placeholder="yourname@ybl" id="upiInput">
+                    </div>
+
+                    <!-- Pay Now -->
+                    <button class="pay-btn w-100" onclick="processPayment()">
+                        Pay <span id="modalBtnPrice">₹199</span> Securely →
+                    </button>
+
+                </div>
+            </div>
+
+            <!-- Processing View -->
+            <div id="modalProcessing" style="display:none;">
+                <div class="modal-state-view text-center">
+                    <div class="neu-spinner mx-auto mb-3">
+                        <div class="spinner-border text-primary" role="status"></div>
+                    </div>
+                    <h5 class="fw-bold">Processing Payment…</h5>
+                    <p class="text-muted small">Please wait while we verify<br>your payment with Razorpay.</p>
+                </div>
+            </div>
+
+            <!-- Success View -->
+            <div id="modalSuccess" style="display:none;">
+                <div class="modal-state-view text-center">
+                    <div class="success-icon-wrap mx-auto mb-3">✅</div>
+                    <h5 class="fw-bold">Payment Successful!</h5>
+                    <p class="text-muted small">Your resume credits have been added.<br>Start building your perfect resume now!</p>
+                    <div class="credits-added-display mb-3">
+                        <span class="credits-num gradient-text" id="successNum">5</span>
+                        <div class="credits-txt">
+                            <strong>Credits Added</strong>
+                            <span class="d-block text-muted small">Ready to use instantly</span>
+                        </div>
+                    </div>
+                    <button class="pay-btn w-100" onclick="goToResume()">
+                        Build My Resume →
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- Scripts -->
+    <script src="{% static 'core/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'core/js/payment_page.js' %}"></script>
+
+</body>
+</html>
+
